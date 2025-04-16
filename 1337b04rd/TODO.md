@@ -85,34 +85,34 @@
 - [+] 2. Инициализировать Go модуль: `go mod init 1337b04rd`
 - [+] 3. Создать файл main.go в директории cmd/1337b04rd
 - [+] 4. Реализовать базовую обработку флагов командной строки (--port, --help)
-- [ ] 5. Настроить конфигурационный модуль (config.go)
-- [ ] 6. Настроить систему логирования на базе log/slog
-- [ ] 7. Создать Makefile для автоматизации сборки и запуска
+- [+/-] 5. Настроить конфигурационный модуль (config.go)
+- [+/-] 6. Настроить систему логирования на базе log/slog
+- [+] 7. Создать Makefile для автоматизации сборки и запуска
 
 ## Этап 2: Проектирование и настройка базы данных
 
-- [ ] 1. Спроектировать схему базы данных PostgreSQL
-- [ ] 2. Создать SQL-скрипты для инициализации БД (schema.sql)
+- [+] 1. Спроектировать схему базы данных PostgreSQL
+- [+] 2. Создать SQL-скрипты для инициализации БД (schema.sql)
 - [ ] 3. Написать скрипт миграции для создания таблиц:
    - users
    - sessions
    - posts
    - comments
-- [ ] 4. Настроить Docker-контейнер для локальной разработки с PostgreSQL
+- [+] 4. Настроить Docker-контейнер для локальной разработки с PostgreSQL
 - [ ] 5. Реализовать функции для подключения к базе данных в adapter/repository/postgres.go
 
 ## Этап 3: Реализация доменного слоя (сущности и интерфейсы)
 
-- [ ] 1. Создать сущность Post в domain/entity/post.go
-- [ ] 2. Создать сущность Comment в domain/entity/comment.go
-- [ ] 3. Создать сущность User в domain/entity/user.go
-- [ ] 4. Создать сущность Session в domain/entity/session.go
-- [ ] 5. Определить интерфейс PostRepository в domain/port/repository/post.go
-- [ ] 6. Определить интерфейс CommentRepository в domain/port/repository/comment.go
-- [ ] 7. Определить интерфейс UserRepository в domain/port/repository/user.go
-- [ ] 8. Определить интерфейс SessionRepository в domain/port/repository/session.go
-- [ ] 9. Определить интерфейс AvatarAPI в domain/port/api/avatar.go
-- [ ] 10. Определить интерфейс StorageAPI в domain/port/api/storage.go
+- [+] 1. Создать сущность Post в domain/entity/post.go
+- [+] 2. Создать сущность Comment в domain/entity/comment.go
+- [+] 3. Создать сущность User в domain/entity/user.go
+- [+] 4. Создать сущность Session в domain/entity/session.go
+- [+] 5. Определить интерфейс PostRepository в domain/port/repository/post.go
+- [+] 6. Определить интерфейс CommentRepository в domain/port/repository/comment.go
+- [+] 7. Определить интерфейс UserRepository в domain/port/repository/user.go
+- [+] 8. Определить интерфейс SessionRepository в domain/port/repository/session.go
+- [?] 9. Определить интерфейс AvatarAPI в domain/port/api/avatar.go
+- [?] 10. Определить интерфейс StorageAPI в domain/port/api/storage.go
 
 ## Этап 4: Реализация доменных сервисов
 
