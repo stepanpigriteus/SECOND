@@ -1,4 +1,4 @@
-package pkgs
+package flags
 
 import (
 	"flag"
@@ -14,7 +14,6 @@ func Flags() int {
 	if !ValidatePort(*port) {
 		*port = 8083
 	}
-
 	if *help {
 		showHelp()
 		os.Exit(0)

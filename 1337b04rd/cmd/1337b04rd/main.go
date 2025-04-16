@@ -1,6 +1,8 @@
 package main
 
-import ("1337b04rd/pkg/flags")
+import (
+	"1337b04rd/pkg/flags"
+)
 
 
 func main() {
