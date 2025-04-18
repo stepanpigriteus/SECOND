@@ -40,6 +40,6 @@ func LoadConfig() *Config {
 	cfg.S3.SecretKey = os.Getenv("S3_SECRET_KEY")
 	cfg.S3.Bucket = os.Getenv("S3_BUCKET")
 	cfg.S3.Region = os.Getenv("S3_REGION")
-
+	
 	return cfg
 }

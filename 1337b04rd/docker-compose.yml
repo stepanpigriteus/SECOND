@@ -20,14 +20,13 @@ services:
     container_name: 1337b04rd_minio
     command: server --console-address ":9001" /data
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: minioadmin_new  # Новый пользователь
+      MINIO_ROOT_PASSWORD: minioadmin_new_password  # Новый пароль
     ports:
       - "9000:9000"  # S3 API
       - "9001:9001"  # Web Console
     volumes:
-      - minio-data:/data
-      
+      - 1337b04rd_minio-data:/data
 
   mc:
     image: minio/mc
@@ -35,34 +34,34 @@ services:
     depends_on:
       - minio
     entrypoint: ["/bin/sh", "-c"]
-    command: ["/scripts/init-bucket.sh"]
+    command: ["/bin/sh", "-c", "sleep 10 && /scripts/init-bucket.sh"]
     volumes:
       - ./init-bucket.sh:/scripts/init-bucket.sh
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 1337b04rd_app
+    depends_on:
+      - postgres
+      - minio
+    ports:
+      - "8083:8080"
+    environment:
+      - DB_HOST=1337b04rd_postgres
+      - DB_PORT=5432
+      - DB_USER=board_user
+      - DB_PASSWORD=board_pass
+      - DB_NAME=1337b04rd
+      - DB_SSLMODE=disable
+      - MINIO_HOST=1337b04rd_minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - PORT=8083
+    restart: always
+
 volumes:
-  pgdata:
-  minio-data:
-
-
-# Доступы
-# PostgreSQL:
-
-# host: localhost
-
-# port: 5432
-
-# user: board_user
-
-# password: board_pass
-
-# db: 1337b04rd
-
-# MinIO:
-
-# Web UI: http://localhost:9001
-
-# S3 Endpoint: http://localhost:9000
-
-# Access Key: minioadmin
-
-# Secret Key: minioadmin
+  pgdata: {}
+  1337b04rd_minio-data: {}

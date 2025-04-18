@@ -4,6 +4,7 @@ import (
 	"1337b04rd/internal/domain/entity"
 	"1337b04rd/internal/domain/port/repository"
 	"database/sql"
+	"log"
 )
 
 type PostgresRepository struct {
@@ -29,4 +30,21 @@ func (r *PostgresRepository) UpdateUser(user *entity.User) (*entity.User, error)
 
 func (r *PostgresRepository) DeleteUser(id int) error {
 	return nil
+}
+
+func ConnectDB(connectionString string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", connectionString)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping()
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+
+	log.Println("Connected to Database successfully!")
+
+	return db, nil
 }
