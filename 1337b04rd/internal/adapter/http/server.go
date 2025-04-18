@@ -1,6 +1,7 @@
 package http
 
 import (
+	"1337b04rd/internal/adapter/http/middleware"
 	"1337b04rd/internal/domain/port"
 	"1337b04rd/pkg/errors"
 	"1337b04rd/pkg/logger"
@@ -32,7 +33,8 @@ func (s *server) RunServer() {
 		os.Exit(1)
 	}
 	mux := http.NewServeMux()
-	mux.Handle("/", &handleDef{})
+	mux.Handle("/", middleware.LoggerMiddleware(&handleDef{}))
+
 	logger.NewSlogAdapter().Info("Starting server", "port", s.port)
 
 	err := http.ListenAndServe("0.0.0.0:"+s.port, mux)
