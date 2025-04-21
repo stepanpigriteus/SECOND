@@ -116,8 +116,8 @@
 
 ## Этап 4: Реализация доменных сервисов
 
-- [ ] 1. Реализовать PostService в domain/service/post.go
-- [ ] 2. Реализовать CommentService в domain/service/comment.go
+- [+/- ] 1. Реализовать PostService в domain/service/post.go
+- [+/- ] 2. Реализовать CommentService в domain/service/comment.go
 - [ ] 3. Реализовать UserService в domain/service/user.go
 - [ ] 4. Реализовать SessionService в domain/service/session.go
 - [ ] 5. Добавить бизнес-логику для автоматического удаления постов

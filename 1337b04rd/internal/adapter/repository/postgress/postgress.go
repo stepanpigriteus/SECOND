@@ -1,4 +1,4 @@
-package repository
+package postgress
 
 import (
 	"1337b04rd/internal/domain/entity"
