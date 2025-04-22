@@ -1,10 +1,9 @@
 package postgress
 
 import (
+	"1337b04rd/internal/domain/entity"
 	"context"
 	"database/sql"
-
-	"1337b04rd/internal/domain/entity"
 )
 
 // type PostRepository interface {
@@ -27,7 +26,8 @@ func (r *PostgresPostRepository) CreatePost(ctx context.Context, post *entity.Po
 	return post, nil
 }
 
-func (r *PostgresPostRepository) GetPostByID(ctx context.Context, post *entity.Post) (*entity.Post, error) {
+func (r *PostgresPostRepository) GetPostByID(ctx context.Context, id int) (*entity.Post, error) {
+	var post *entity.Post
 	return post, nil
 }
 

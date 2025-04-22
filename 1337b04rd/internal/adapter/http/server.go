@@ -1,8 +1,12 @@
 package http
 
 import (
-	"1337b04rd/internal/adapter/http/middleware"
+	"1337b04rd/internal/adapter/http/handler"
+	"1337b04rd/internal/adapter/http/router"
+	"1337b04rd/internal/adapter/repository/postgress"
 	"1337b04rd/internal/domain/port"
+	"1337b04rd/internal/domain/service"
+	servicework "1337b04rd/internal/domain/service/service_work"
 	"1337b04rd/pkg/errors"
 	"1337b04rd/pkg/logger"
 	"database/sql"
@@ -12,16 +16,26 @@ import (
 )
 
 type server struct {
-	port   string
-	db     *sql.DB
-	logger *port.Logger
+	port     string
+	db       *sql.DB
+	logger   port.Logger
+	services *service.AllServices
 }
 
-func NewServer(port string, db *sql.DB, logger *port.Logger) *server {
+func NewServer(port string, db *sql.DB, logger port.Logger) *server {
+	// Инициализация репозиториев и сервисов
+	postRepo := postgress.NewPostgresPostRepository(db)
+	postService := servicework.NewPostService(postRepo)
+
+	services := &service.AllServices{
+		Post: postService,
+	}
+
 	return &server{
-		port:   port,
-		db:     db,
-		logger: logger,
+		port:     port,
+		db:       db,
+		logger:   logger,
+		services: services,
 	}
 }
 
@@ -32,8 +46,14 @@ func (s *server) RunServer() {
 		logger.NewSlogAdapter().Error("Port is not set")
 		os.Exit(1)
 	}
+
 	mux := http.NewServeMux()
-	mux.Handle("/", middleware.LoggerMiddleware(&handleDef{}))
+
+	// Инициализация хендлеров
+	handlers := handler.NewAllHandlers(s.services)
+
+	// Регистрируем роуты
+	router.RegisterRoutes(mux, handlers)
 
 	logger.NewSlogAdapter().Info("Starting server", "port", s.port)
 

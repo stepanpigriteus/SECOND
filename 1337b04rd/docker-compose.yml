@@ -47,7 +47,7 @@ services:
       - postgres
       - minio
     ports:
-      - "8083:8080"
+      - "8083:8083"
     environment:
       - DB_HOST=1337b04rd_postgres
       - DB_PORT=5432

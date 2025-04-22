@@ -18,7 +18,7 @@ func main() {
 	cfg := config.LoadConfig()
 
 	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", 
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		cfg.DB.Host,
 		cfg.DB.Port,
 		cfg.DB.User,
@@ -33,6 +33,6 @@ func main() {
 		log.Fatalf("could not connect to db: %v", err)
 	}
 
-	server := http.NewServer(strconv.Itoa(port), db, &logger)
+	server := http.NewServer(strconv.Itoa(port), db, logger)
 	server.RunServer()
 }
