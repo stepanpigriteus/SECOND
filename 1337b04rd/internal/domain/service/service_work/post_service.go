@@ -1,20 +1,20 @@
 package servicework
 
 import (
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/port/repository"
 	"context"
 	"time"
+
+	"1337b04rd/internal/domain/entity"
+	"1337b04rd/internal/domain/port/repository"
+	"1337b04rd/internal/domain/service"
 )
 
 type postService struct {
 	postRepo repository.PostRepository
 }
 
-func NewPostService(postRepo repository.PostRepository) *postService {
-	return &postService{
-		postRepo: postRepo,
-	}
+func NewPostService(repo repository.PostRepository) service.PostService {
+	return &postService{postRepo: repo}
 }
 
 func (s *postService) CreatePost(ctx context.Context, post entity.Post) (entity.Post, error) {

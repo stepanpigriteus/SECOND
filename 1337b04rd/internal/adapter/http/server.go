@@ -1,6 +1,11 @@
 package http
 
 import (
+	"database/sql"
+	"encoding/json"
+	"net/http"
+	"os"
+
 	"1337b04rd/internal/adapter/http/handler"
 	"1337b04rd/internal/adapter/http/router"
 	"1337b04rd/internal/adapter/repository/postgress"
@@ -8,11 +13,6 @@ import (
 	"1337b04rd/internal/domain/service"
 	servicework "1337b04rd/internal/domain/service/service_work"
 	"1337b04rd/pkg/errors"
-	"1337b04rd/pkg/logger"
-	"database/sql"
-	"encoding/json"
-	"net/http"
-	"os"
 )
 
 type server struct {
@@ -43,7 +43,7 @@ type handleDef struct{}
 
 func (s *server) RunServer() {
 	if s.port == "" {
-		logger.NewSlogAdapter().Error("Port is not set")
+		s.logger.Error("Port is not set")
 		os.Exit(1)
 	}
 
@@ -55,18 +55,31 @@ func (s *server) RunServer() {
 	// Регистрируем роуты
 	router.RegisterRoutes(mux, handlers)
 
-	logger.NewSlogAdapter().Info("Starting server", "port", s.port)
+	s.logger.Info("Starting server", "port", s.port)
 
 	err := http.ListenAndServe("0.0.0.0:"+s.port, mux)
 	if err != nil {
-		logger.NewSlogAdapter().Error("Failed to start server", "error", err)
+		s.logger.Error("Failed to start server", "error", err)
 		os.Exit(1)
 	}
 }
 
 func (h *handleDef) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(500)
-	response := errors.Error{Message: "Undefined Error, please check your method or endpoint correctness"}
-	json.NewEncoder(w).Encode(response)
+
+	statusCode := http.StatusInternalServerError
+	if r.Method == "OPTIONS" {
+		statusCode = http.StatusOK
+	}
+
+	w.WriteHeader(statusCode)
+
+	response := errors.Error{
+		Message: "Undefined Error, please check your method or endpoint correctness",
+	}
+
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+	}
 }

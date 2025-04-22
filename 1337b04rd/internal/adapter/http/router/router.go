@@ -1,8 +1,11 @@
 package router
 
 import (
-	"1337b04rd/internal/adapter/http/handler"
+	"fmt"
 	"net/http"
+
+	"1337b04rd/internal/adapter/http/handler"
+	"1337b04rd/internal/adapter/http/middleware"
 )
 
 type Route struct {
@@ -13,9 +16,11 @@ type Route struct {
 }
 
 func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
+	fmt.Println(">>> Registering route: POST /posts")
 	routes := []Route{
 		// Роут для создания поста
-		{Method: http.MethodPost, Path: "/posts", Handler: handlers.Post.CreatePost},
+		{Method: http.MethodPost, Path: "/posts", Handler: handlers.Post.CreatePost, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodPost, Path: "/posts/", Handler: handlers.Post.CreatePost, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 		// Пример других роутов
 		// {Method: http.MethodGet, Path: "/posts", Handler: handlers.Post.GetPosts},
 		// {Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.GetPostByID},
@@ -28,14 +33,15 @@ func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
 }
 
 // ограничивает хендлер только одним методом
-func methodHandler(method string, h http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func methodHandler(method string, handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf(">>> methodHandler: got %s request on %s\n", r.Method, r.URL.Path)
 		if r.Method != method {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, `{"error":"method not allowed"}`, http.StatusMethodNotAllowed)
 			return
 		}
-		h.ServeHTTP(w, r)
-	}
+		handler.ServeHTTP(w, r)
+	})
 }
 
 func applyMiddleware(h http.Handler, middlewares []func(http.Handler) http.Handler) http.Handler {

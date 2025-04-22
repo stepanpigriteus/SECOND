@@ -13,7 +13,7 @@ type AllHandlers struct {
 
 func NewAllHandlers(services *service.AllServices) *AllHandlers {
 	return &AllHandlers{
-		Post: NewPostHandler(&services.Post),
+		Post: NewPostHandler(services.Post),
 		// User:    NewUserHandler(services.User),
 		// Comment: NewCommentHandler(services.Comment),
 		// Session: NewSessionHandler(services.Session),
