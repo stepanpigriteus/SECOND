@@ -14,3 +14,13 @@ type Post struct {
 	DeletedAt     time.Time `json:"deleted_at,omitempty"`
 	LastCommentAt time.Time `json:"last_comment_at"`
 }
+
+
+// {
+// 	"title": "My First Post",
+// 	"content": "This is the content of my first post.",
+// 	"image_url": "https://example.com/image.jpg",
+// 	"user_id": 1,
+// 	"last_comment_at": "2025-04-24T14:30:00Z"
+//   }
+  

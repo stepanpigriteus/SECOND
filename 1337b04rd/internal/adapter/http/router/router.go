@@ -1,11 +1,10 @@
 package router
 
 import (
-	"fmt"
-	"net/http"
-
 	"1337b04rd/internal/adapter/http/handler"
 	"1337b04rd/internal/adapter/http/middleware"
+	"fmt"
+	"net/http"
 )
 
 type Route struct {
@@ -21,6 +20,9 @@ func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
 		// Роут для создания поста
 		{Method: http.MethodPost, Path: "/posts", Handler: handlers.Post.CreatePost, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 		{Method: http.MethodPost, Path: "/posts/", Handler: handlers.Post.CreatePost, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.GetPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.UpdatePostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.DeletePostPostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 		// Пример других роутов
 		// {Method: http.MethodGet, Path: "/posts", Handler: handlers.Post.GetPosts},
 		// {Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.GetPostByID},
