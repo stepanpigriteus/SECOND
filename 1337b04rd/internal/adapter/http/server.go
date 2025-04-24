@@ -28,10 +28,16 @@ func NewServer(port string, db *sql.DB, logger port.Logger) *server {
 	postService := servicework.NewPostService(postRepo)
 	userRepo := postgress.NewPostgresUserRepository(db)
 	userService := servicework.NewUserService(userRepo)
+	commentRepo := postgress.NewPostgresCommentRepository(db)
+	commentService := servicework.NewCommentService(commentRepo)
+	sessionRepo := postgress.NewPostgresSessionRepository(db)
+	sessionService := servicework.NewSessionService(sessionRepo)
 
 	services := &service.AllServices{
-		Post: postService,
-		User: userService,
+		Post:    postService,
+		User:    userService,
+		Comment: commentService,
+		Session: sessionService,
 	}
 
 	return &server{

@@ -27,6 +27,10 @@ func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
 		{Method: http.MethodPost, Path: "/user", Handler: handlers.User.CreateUser},
 		{Method: http.MethodGet, Path: "/user/", Handler: handlers.User.GetUserByID},
 		{Method: http.MethodDelete, Path: "/user/delete", Handler: handlers.User.DeleteUser},
+
+		// Роут для комментов
+		{Method: http.MethodPost, Path: "/post/comment", Handler: handlers.Comment.CreateComment},
+		{Method: http.MethodDelete, Path: "/post/comment/delete", Handler: handlers.Comment.DeleteComment},
 	}
 
 	for _, route := range routes {

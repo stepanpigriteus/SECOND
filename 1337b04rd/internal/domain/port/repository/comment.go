@@ -1,9 +1,12 @@
 package repository
 
-import "1337b04rd/internal/domain/entity"
+import (
+	"1337b04rd/internal/domain/entity"
+	"context"
+)
 
 type CommentRepository interface {
-	CreateComment(comment *entity.Comment) (*entity.Comment, error)
-	GetCommentsByPostID(postID int) ([]*entity.Comment, error)
-	DeleteComment(id int) error
+	CreateComment(ctx context.Context, comment *entity.Comment) (*entity.Comment, error)
+	GetCommentsByPostID(ctx context.Context, postID int) ([]*entity.Comment, error)
+	DeleteComment(ctx context.Context, id int) error
 }
