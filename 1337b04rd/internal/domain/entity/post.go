@@ -4,7 +4,7 @@ import "time"
 
 // Структура для поста
 type Post struct {
-	ID            int       `json:"id"`
+	ID            int32      `json:"id"`
 	Title         string    `json:"title"`
 	Content       string    `json:"content"`
 	ImageURL      string    `json:"image_url,omitempty"`

@@ -48,6 +48,7 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error":"postService is not initialized"}`, http.StatusInternalServerError)
 		return
 	}
+
 	id, err := externalfunc.ExtractIDFromPath(r.URL.Path)
 	if err != nil {
 		http.Error(w, `{"error":"invalid id"}`, http.StatusBadRequest)
@@ -55,7 +56,8 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	post, err := h.postService.GetPostByID(ctx, id)
+	id32 := int32(id)
+	post, err := h.postService.GetPostByID(ctx, id32)
 	if err != nil {
 		http.Error(w, `{"error":"post not found"}`, http.StatusNotFound)
 		return

@@ -20,11 +20,12 @@ func (r *PostgresPostRepository) CreatePost(ctx context.Context, post *entity.Po
 	return post, nil
 }
 
-func (r *PostgresPostRepository) GetPostByID(ctx context.Context, id int) (*entity.Post, error) {
+func (r *PostgresPostRepository) GetPostByID(ctx context.Context, id int32) (*entity.Post, error) {
 	var post entity.Post
 
 	///заглушка
-	query := `SELECT id, title, content, image_url, user_id, created_at, updated_at, deleted_at, last_comment_at FROM posts WHERE id = $1`
+	query := `SELECT id, title, content, image_url, user_id, created_at, updated_at, COALESCE(deleted_at, '1970-01-01 00:00:00') AS deleted_at, last_comment_at FROM posts WHERE id = $1;
+`
 
 	// Выполняем запрос
 	row := r.db.QueryRowContext(ctx, query, id)
@@ -33,8 +34,10 @@ func (r *PostgresPostRepository) GetPostByID(ctx context.Context, id int) (*enti
 	err := row.Scan(&post.ID, &post.Title, &post.Content, &post.ImageURL, &post.UserID, &post.CreatedAt, &post.UpdatedAt, &post.DeletedAt, &post.LastCommentAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			fmt.Println("No rows returned from query")
 			return nil, fmt.Errorf("post not found")
 		}
+		fmt.Println("Error during scan:", err)
 		return nil, fmt.Errorf("failed to retrieve post: %w", err)
 	}
 
@@ -45,6 +48,6 @@ func (r *PostgresPostRepository) UpdatePost(ctx context.Context, post *entity.Po
 	return post, nil
 }
 
-func (r *PostgresPostRepository) DeletePost(ctx context.Context, id int) error {
+func (r *PostgresPostRepository) DeletePost(ctx context.Context, id int32) error {
 	return nil
 }
