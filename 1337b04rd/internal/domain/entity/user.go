@@ -9,3 +9,11 @@ type User struct {
 	CustomName    string    `json:"custom_name,omitempty"`
 	CreatedAt     time.Time `json:"created_at"`
 }
+
+// {
+// 	"id": 1,
+// 	"avatar_url": "https://example.com/avatar.jpg",
+// 	"character_name": "Hero123",
+// 	"custom_name": "SuperHeroX",
+// 	"created_at": "2025-04-24T08:00:00Z"
+//   }

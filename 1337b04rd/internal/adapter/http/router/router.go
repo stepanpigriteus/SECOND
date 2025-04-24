@@ -17,15 +17,16 @@ type Route struct {
 func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
 	fmt.Println(">>> Registering route: POST /posts")
 	routes := []Route{
-		// Роут для создания поста
-		{Method: http.MethodPost, Path: "/posts", Handler: handlers.Post.CreatePost, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
-		{Method: http.MethodPost, Path: "/posts/", Handler: handlers.Post.CreatePost, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
-		{Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.GetPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
-		{Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.UpdatePostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
-		{Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.DeletePostPostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
-		// Пример других роутов
-		// {Method: http.MethodGet, Path: "/posts", Handler: handlers.Post.GetPosts},
-		// {Method: http.MethodGet, Path: "/posts/{id}", Handler: handlers.Post.GetPostByID},
+		// Роут для поста
+		{Method: http.MethodPost, Path: "/post", Handler: handlers.Post.CreatePost, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodGet, Path: "/post/", Handler: handlers.Post.GetPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodPut, Path: "/post/update", Handler: handlers.Post.UpdatePostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodDelete, Path: "/post/delete", Handler: handlers.Post.DeletePostPostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		// Роут для юзера
+
+		{Method: http.MethodPost, Path: "/user", Handler: handlers.User.CreateUser},
+		{Method: http.MethodGet, Path: "/user/", Handler: handlers.User.GetUserByID},
+		{Method: http.MethodDelete, Path: "/user/delete", Handler: handlers.User.DeleteUser},
 	}
 
 	for _, route := range routes {

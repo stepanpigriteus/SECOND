@@ -6,7 +6,7 @@ import (
 
 type AllHandlers struct {
 	Post *PostHandler
-	// 	User    *UserHandler
+	User *UserHandler
 	// 	Comment *CommentHandler
 	// 	Session *SessionHandler
 }
@@ -14,7 +14,7 @@ type AllHandlers struct {
 func NewAllHandlers(services *service.AllServices) *AllHandlers {
 	return &AllHandlers{
 		Post: NewPostHandler(services.Post),
-		// User:    NewUserHandler(services.User),
+		User: NewUserHandler(services.User),
 		// Comment: NewCommentHandler(services.Comment),
 		// Session: NewSessionHandler(services.Session),
 	}

@@ -1,10 +1,11 @@
 package servicework
 
 import (
-	"context"
-
 	"1337b04rd/internal/domain/entity"
 	"1337b04rd/internal/domain/port/repository"
+	"context"
+	"fmt"
+	"time"
 )
 
 type userService struct {
@@ -18,18 +19,40 @@ func NewUserService(userRepo repository.UserRepository) *userService {
 }
 
 func (s *userService) CreateUser(ctx context.Context, user entity.User) (entity.User, error) {
-	return user, nil
+	if user.CharacterName == "" {
+		return entity.User{}, fmt.Errorf("character name is required")
+	}
+	createdAt := time.Now()
+	user.CreatedAt = createdAt
+
+	createdUser, err := s.userRepo.CreateUser(ctx, &user)
+	if err != nil {
+		return entity.User{}, err
+	}
+	return *createdUser, nil
 }
 
 func (s *userService) GetUserByID(ctx context.Context, id int) (entity.User, error) {
-	var user entity.User
-	return user, nil
+	fmt.Println(">>> GetUserById service called", id)
+
+	user, err := s.userRepo.GetUserByID(ctx, id)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return *user, nil
 }
 
 func (s *userService) UpdateUser(ctx context.Context, user entity.User) (entity.User, error) {
-	return user, nil
+	fmt.Println(">>> UpdateUser service called")
+	updatedUser, err := s.userRepo.UpdateUser(ctx, &user)
+	if err != nil {
+		return entity.User{}, err
+	}
+	return *updatedUser, nil
 }
 
 func (s *userService) DeleteUser(ctx context.Context, id int) error {
-	return nil
+	fmt.Println(">>> DeleteUser service called")
+	return s.userRepo.DeleteUser(ctx, id)
 }

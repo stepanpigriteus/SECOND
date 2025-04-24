@@ -18,6 +18,7 @@ func NewPostService(repo repository.PostRepository) service.PostService {
 }
 
 func (s *postService) CreatePost(ctx context.Context, post entity.Post) (entity.Post, error) {
+	fmt.Println(">>> CreatePost service called")
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()
 
@@ -39,6 +40,7 @@ func (s *postService) GetPostByID(ctx context.Context, id int) (entity.Post, err
 }
 
 func (s *postService) UpdatePost(ctx context.Context, id int, post entity.Post) (entity.Post, error) {
+	fmt.Println(">>> UpdatePost service called")
 	post.ID = id
 	post.UpdatedAt = time.Now()
 
@@ -50,5 +52,6 @@ func (s *postService) UpdatePost(ctx context.Context, id int, post entity.Post) 
 }
 
 func (s *postService) DeletePost(ctx context.Context, id int) error {
+	fmt.Println(">>> DeletePost service called")
 	return s.postRepo.DeletePost(ctx, id)
 }

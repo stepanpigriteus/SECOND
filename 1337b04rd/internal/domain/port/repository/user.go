@@ -1,10 +1,13 @@
 package repository
 
-import "1337b04rd/internal/domain/entity"
+import (
+	"1337b04rd/internal/domain/entity"
+	"context"
+)
 
 type UserRepository interface {
-	CreateUser(user *entity.User) (*entity.User, error)
-	GetUserByID(id int) (*entity.User, error)
-	UpdateUser(user *entity.User) (*entity.User, error)
-	DeleteUser(id int) error
+	CreateUser(ctx context.Context, user *entity.User) (*entity.User, error)
+	GetUserByID(ctx context.Context, id int) (*entity.User, error)
+	UpdateUser(ctx context.Context, user *entity.User) (*entity.User, error)
+	DeleteUser(ctx context.Context, id int) error
 }

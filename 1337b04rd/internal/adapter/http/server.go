@@ -1,18 +1,18 @@
 package http
 
 import (
-	"database/sql"
-	"encoding/json"
-	"net/http"
-	"os"
-
 	"1337b04rd/internal/adapter/http/handler"
 	"1337b04rd/internal/adapter/http/router"
 	"1337b04rd/internal/adapter/repository/postgress"
 	"1337b04rd/internal/domain/port"
 	"1337b04rd/internal/domain/service"
-	servicework "1337b04rd/internal/domain/service/service_work"
 	"1337b04rd/pkg/errors"
+	"database/sql"
+	"encoding/json"
+	"net/http"
+	"os"
+
+	servicework "1337b04rd/internal/domain/service/service_work"
 )
 
 type server struct {
@@ -26,9 +26,12 @@ func NewServer(port string, db *sql.DB, logger port.Logger) *server {
 	// Инициализация репозиториев и сервисов
 	postRepo := postgress.NewPostgresPostRepository(db)
 	postService := servicework.NewPostService(postRepo)
+	userRepo := postgress.NewPostgresUserRepository(db)
+	userService := servicework.NewUserService(userRepo)
 
 	services := &service.AllServices{
 		Post: postService,
+		User: userService,
 	}
 
 	return &server{
