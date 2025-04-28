@@ -11,7 +11,8 @@ services:
       POSTGRES_PASSWORD: board_pass
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/02_init.sql
     ports:
       - "5432:5432"
 

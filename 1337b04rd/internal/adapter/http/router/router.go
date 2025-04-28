@@ -1,10 +1,11 @@
 package router
 
 import (
-	"1337b04rd/internal/adapter/http/handler"
-	"1337b04rd/internal/adapter/http/middleware"
 	"fmt"
 	"net/http"
+
+	"1337b04rd/internal/adapter/http/handler"
+	"1337b04rd/internal/adapter/http/middleware"
 )
 
 type Route struct {
@@ -22,6 +23,7 @@ func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
 		{Method: http.MethodGet, Path: "/post/", Handler: handlers.Post.GetPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 		{Method: http.MethodPut, Path: "/post/update", Handler: handlers.Post.UpdatePostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 		{Method: http.MethodDelete, Path: "/post/delete", Handler: handlers.Post.DeletePostPostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodGet, Path: "/catalog", Handler: handlers.Post.GetPostsHandler, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 		// Роут для юзера
 
 		{Method: http.MethodPost, Path: "/user", Handler: handlers.User.CreateUser},

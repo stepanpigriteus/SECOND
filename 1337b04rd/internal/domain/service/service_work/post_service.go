@@ -1,12 +1,13 @@
 package servicework
 
 import (
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/port/repository"
-	"1337b04rd/internal/domain/service"
 	"context"
 	"fmt"
 	"time"
+
+	"1337b04rd/internal/domain/entity"
+	"1337b04rd/internal/domain/port/repository"
+	"1337b04rd/internal/domain/service"
 )
 
 type postService struct {
@@ -54,4 +55,8 @@ func (s *postService) UpdatePost(ctx context.Context, id int32, post entity.Post
 func (s *postService) DeletePost(ctx context.Context, id int32) error {
 	fmt.Println(">>> DeletePost service called")
 	return s.postRepo.DeletePost(ctx, id)
+}
+
+func (s *postService) ListPosts(ctx context.Context) ([]entity.PostRequest, error) {
+	return s.postRepo.ListPosts(ctx)
 }

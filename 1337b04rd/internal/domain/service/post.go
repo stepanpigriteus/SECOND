@@ -1,8 +1,9 @@
 package service
 
 import (
-	"1337b04rd/internal/domain/entity"
 	"context"
+
+	"1337b04rd/internal/domain/entity"
 )
 
 type PostService interface {
@@ -10,4 +11,5 @@ type PostService interface {
 	GetPostByID(ctx context.Context, id int32) (entity.Post, error)
 	UpdatePost(ctx context.Context, id int32, post entity.Post) (entity.Post, error)
 	DeletePost(ctx context.Context, id int32) error
+	ListPosts(ctx context.Context) ([]entity.PostRequest, error)
 }
