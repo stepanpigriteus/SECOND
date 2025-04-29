@@ -30,19 +30,44 @@ func NewPostHandler(ps service.PostService, us service.UserService, cs service.C
 
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(">>> CreatePost handler called")
-	var post entity.Post
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
-	// Декодируем гребанный мультиформ из тела запроса Дописать!!!!
+	// Получение пользователя из контекста
+	userCtx := ctx.Value("user")
+	if userCtx == nil {
+		http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+		return
+	}
+	user, ok := userCtx.(*entity.User)
+	if !ok {
+		http.Error(w, `{"error":"invalid user context"}`, http.StatusInternalServerError)
+		return
+	}
+
+	// Парсим multipart
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		http.Error(w, `{"error":"invalid input!"}`, http.StatusBadRequest)
 		return
 	}
 
-	// post. := r.FormValue("name")
-	// post.Title = r.FormValue("subject")
-	// comment := r.FormValue("comment")
+	// Если передано имя — обновляем кастомное имя пользователя
+	name := r.FormValue("name")
+	if name != "" {
+		user.CustomName = name
+		_, err := h.userService.UpdateUser(ctx, *user)
+		if err != nil {
+			http.Error(w, `{"error":"failed to update custom name"}`, http.StatusInternalServerError)
+			return
+		}
+	}
+
+	post := entity.Post{
+		Title:    r.FormValue("title"),
+		Content:  r.FormValue("content"),
+		ImageURL: "", // обработай загрузку файла отдельно, если надо
+		UserID:   user.ID,
+	}
 
 	createdPost, err := h.postService.CreatePost(ctx, post)
 	if err != nil {

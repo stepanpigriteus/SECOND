@@ -27,6 +27,7 @@ func (s *postService) CreatePost(ctx context.Context, post entity.Post) (entity.
 	if err != nil {
 		return entity.Post{}, err
 	}
+	
 
 	return *createdPost, nil
 }

@@ -35,23 +35,49 @@ func (r *PostgresRepository) CreateUser(ctx context.Context, user *entity.User) 
 }
 
 func (r *PostgresRepository) GetUserByID(ctx context.Context, id int) (*entity.User, error) {
-	var user entity.User
-
-	query := `SELECT id, avatar_url, character_name, custom_name, created_at FROM users WHERE id = $1`
-	row := r.db.QueryRowContext(ctx, query, id)
-
-	err := row.Scan(&user.ID, &user.AvatarURL, &user.CharacterName, &user.CustomName, &user.CreatedAt)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("user not found")
-		}
-		return nil, fmt.Errorf("failed to retrieve user: %w", err)
-	}
-
-	return &user, nil
+    query := `SELECT id, character_name, avatar_url, custom_name FROM users WHERE id = $1`
+    user := &entity.User{}
+    
+    // Используем указатели на sql.NullString для полей, которые могут быть NULL
+    var customName sql.NullString
+    
+    err := r.db.QueryRowContext(ctx, query, id).Scan(
+        &user.ID,
+        &user.CharacterName,
+        &user.AvatarURL,
+        &customName, // Используем sql.NullString вместо &user.CustomName напрямую
+    )
+    
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return nil, fmt.Errorf("пользователь с ID %d не найден", id)
+        }
+        return nil, fmt.Errorf("ошибка при получении пользователя: %v", err)
+    }
+    
+    // Присваиваем значение только если оно не NULL
+    if customName.Valid {
+        user.CustomName = customName.String
+    } else {
+        user.CustomName = "" // или любое другое значение по умолчанию
+    }
+    
+    return user, nil
 }
 
 func (r *PostgresRepository) UpdateUser(ctx context.Context, user *entity.User) (*entity.User, error) {
+	query := `
+		UPDATE users
+		SET custom_name = $1
+		WHERE id = $2
+		RETURNING id, name, custom_name
+	`
+	err := r.db.QueryRowContext(ctx, query, user.CustomName, user.ID).
+		Scan(&user.ID, &user.CharacterName, &user.CustomName)
+	if err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 
