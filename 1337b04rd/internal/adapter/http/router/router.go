@@ -6,6 +6,7 @@ import (
 
 	"1337b04rd/internal/adapter/http/handler"
 	"1337b04rd/internal/adapter/http/middleware"
+	"1337b04rd/internal/domain/service"
 )
 
 type Route struct {
@@ -15,7 +16,7 @@ type Route struct {
 	Middlewares []func(http.Handler) http.Handler
 }
 
-func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
+func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers, sessionService service.SessionService, userService service.UserService) {
 	fmt.Println(">>> Registering route: POST /posts")
 	routes := []Route{
 		// Роут для поста
@@ -23,7 +24,7 @@ func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
 		{Method: http.MethodGet, Path: "/post/", Handler: handlers.Post.GetPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 		{Method: http.MethodPut, Path: "/post/update", Handler: handlers.Post.UpdatePostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 		{Method: http.MethodDelete, Path: "/post/delete", Handler: handlers.Post.DeletePostPostPostByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
-		{Method: http.MethodGet, Path: "/catalog", Handler: handlers.Post.GetPostsHandler, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+
 		// Роут для юзера
 
 		{Method: http.MethodPost, Path: "/user", Handler: handlers.User.CreateUser},
@@ -33,6 +34,15 @@ func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers) {
 		// Роут для комментов
 		{Method: http.MethodPost, Path: "/post/comment", Handler: handlers.Comment.CreateComment},
 		{Method: http.MethodDelete, Path: "/post/comment/delete", Handler: handlers.Comment.DeleteComment},
+
+		// Лядские темплейты
+		{Method: http.MethodGet, Path: "/catalog", Handler: handlers.Post.GetPostsHandler, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware, middleware.SessionMiddleware(sessionService, userService)}},
+		{Method: http.MethodGet, Path: "/create-post", Handler: handlers.Post.CreatePostPage, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+
+		// Роут для хреновых сессий
+		{Method: http.MethodDelete, Path: "/sessions/delete/", Handler: handlers.Session.DeleteSession, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodGet, Path: "/sessions/", Handler: handlers.Session.GetSessionByID, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
+		{Method: http.MethodPost, Path: "/sessions", Handler: handlers.Session.CreateSession, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware}},
 	}
 
 	for _, route := range routes {

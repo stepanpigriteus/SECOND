@@ -17,7 +17,21 @@ func NewPostgresPostRepository(db *sql.DB) *PostgresPostRepository {
 }
 
 func (r *PostgresPostRepository) CreatePost(ctx context.Context, post *entity.Post) (*entity.Post, error) {
-	// запрос на создание поста
+	query := `
+        INSERT INTO posts (title, content, image_url, user_id)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, created_at, updated_at, last_comment_at
+    `
+	err := r.db.QueryRowContext(ctx, query,
+		post.Title,
+		post.Content,
+		post.ImageURL,
+		post.UserID,
+	).Scan(&post.ID, &post.CreatedAt, &post.UpdatedAt, &post.LastCommentAt)
+	if err != nil {
+		return nil, err
+	}
+
 	return post, nil
 }
 

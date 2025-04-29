@@ -1,16 +1,17 @@
 package http
 
 import (
+	"database/sql"
+	"encoding/json"
+	"net/http"
+	"os"
+
 	"1337b04rd/internal/adapter/http/handler"
 	"1337b04rd/internal/adapter/http/router"
 	"1337b04rd/internal/adapter/repository/postgress"
 	"1337b04rd/internal/domain/port"
 	"1337b04rd/internal/domain/service"
 	"1337b04rd/pkg/errors"
-	"database/sql"
-	"encoding/json"
-	"net/http"
-	"os"
 
 	servicework "1337b04rd/internal/domain/service/service_work"
 )
@@ -62,7 +63,7 @@ func (s *server) RunServer() {
 	handlers := handler.NewAllHandlers(s.services)
 
 	// Регистрируем роуты
-	router.RegisterRoutes(mux, handlers)
+	router.RegisterRoutes(mux, handlers, s.services.Session, s.services.User)
 
 	s.logger.Info("Starting server", "port", s.port)
 

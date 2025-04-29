@@ -16,3 +16,4 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) error 
 	}
 	return t.Execute(w, data)
 }
+

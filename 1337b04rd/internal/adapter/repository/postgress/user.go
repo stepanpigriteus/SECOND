@@ -1,12 +1,13 @@
 package postgress
 
 import (
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/port/repository"
 	"context"
 	"database/sql"
 	"fmt"
 	"log"
+
+	"1337b04rd/internal/domain/entity"
+	"1337b04rd/internal/domain/port/repository"
 )
 
 type PostgresRepository struct {
@@ -18,6 +19,18 @@ func NewPostgresUserRepository(db *sql.DB) repository.UserRepository {
 }
 
 func (r *PostgresRepository) CreateUser(ctx context.Context, user *entity.User) (*entity.User, error) {
+	// Выполняем запрос на вставку в таблицу users
+	err := r.db.QueryRowContext(
+		ctx,
+		`INSERT INTO users (character_name, avatar_url) VALUES ($1, $2) RETURNING id`,
+		user.CharacterName, user.AvatarURL,
+	).Scan(&user.ID)
+	// Если ошибка, возвращаем её
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	// Возвращаем пользователя с ID
 	return user, nil
 }
 
