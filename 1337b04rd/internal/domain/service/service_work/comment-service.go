@@ -1,11 +1,13 @@
 package servicework
 
 import (
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/port/repository"
 	"context"
 	"fmt"
+	"mime/multipart"
 	"time"
+
+	"1337b04rd/internal/domain/entity"
+	"1337b04rd/internal/domain/port/repository"
 )
 
 type commentService struct {
@@ -18,9 +20,19 @@ func NewCommentService(commentRepo repository.CommentRepository) *commentService
 	}
 }
 
-func (s *commentService) CreateComment(ctx context.Context, comment entity.Comment) (entity.Comment, error) {
+func (s *commentService) CreateComment(ctx context.Context, comment entity.Comment, fileHeader *multipart.FileHeader) (entity.Comment, error) {
 	fmt.Println(">>> CreateComment service called")
+
 	comment.CreatedAt = time.Now()
+
+	// Если файл есть, сохранить его через порт (интерфейс)
+	// if file != nil {
+	// 	fileURL, err := s.fileStorage.SaveFile(ctx, file, fileHeader.Filename)
+	// 	if err != nil {
+	// 		return entity.Comment{}, err
+	// 	}
+	// 	comment.FileURL = fileURL
+	// }
 
 	createdComment, err := s.commentRepo.CreateComment(ctx, &comment)
 	if err != nil {

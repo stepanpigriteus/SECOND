@@ -1,12 +1,14 @@
 package handler
 
 import (
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/service"
-	externalfunc "1337b04rd/pkg/external_func"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+
+	"1337b04rd/internal/domain/entity"
+	"1337b04rd/internal/domain/service"
+	externalfunc "1337b04rd/pkg/external_func"
 )
 
 type CommentHandler struct {
@@ -19,18 +21,49 @@ func NewCommentHandler(commentService service.CommentService) *CommentHandler {
 
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(">>> CreateComment handler called")
-	var comment entity.Comment
+
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
-	if err := json.NewDecoder(r.Body).Decode(&comment); err != nil {
-		http.Error(w, `{"error":"invalid input!"}`, http.StatusBadRequest)
+	// Ограничить размер тела (например, 10MB)
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, `{"error":"invalid multipart form"}`, http.StatusBadRequest)
 		return
 	}
 
-	createdComment, err := h.commentService.CreateComment(ctx, comment)
+	text := r.FormValue("comment")
+	file, fileHeader, err := r.FormFile("file")
+	if err != nil && err != http.ErrMissingFile {
+		http.Error(w, `{"error":"failed to read file"}`, http.StatusBadRequest)
+		return
+	}
+	defer func() {
+		if file != nil {
+			file.Close()
+		}
+	}()
+
+	postIDStr := r.FormValue("post_id")
+
+	fmt.Println(">>> post ID", postIDStr)
+	postID, err := strconv.Atoi(postIDStr)
 	if err != nil {
-		http.Error(w, `{"error":"failed to create post"}`, http.StatusInternalServerError)
+		http.Error(w, "invalid post_id", http.StatusBadRequest)
+		return
+	}
+
+	userID := r.Context().Value("user").(*entity.User).ID
+	comment := entity.Comment{
+		Content: text,
+		PostID:  postID,
+		UserID:  userID,
+		// Другие поля можно добавить по необходимости
+	}
+
+	// Вызов сервиса
+	createdComment, err := h.commentService.CreateComment(ctx, comment, fileHeader)
+	if err != nil {
+		http.Error(w, `{"error":"failed to create comment"}`, http.StatusInternalServerError)
 		return
 	}
 
@@ -52,6 +85,7 @@ func (h *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) 
 	}
 
 	ctx := r.Context()
+
 	comment, err := h.commentService.GetCommentByID(ctx, id)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(comment); err != nil {
@@ -60,5 +94,4 @@ func (h *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *CommentHandler) DeleteComment(w http.ResponseWriter, r *http.Request) {
-
 }

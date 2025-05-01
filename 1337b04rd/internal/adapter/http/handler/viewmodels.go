@@ -6,6 +6,7 @@ type CommentVM struct {
 	CreatedAt string
 	CommentID int32
 	Content   string
+	Image     string
 }
 
 type PostVM struct {

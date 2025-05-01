@@ -19,3 +19,7 @@ func NewAllHandlers(services *service.AllServices) *AllHandlers {
 		Session: NewSessionHandler(services.Session),
 	}
 }
+
+type contextKey string
+
+const userContextKey contextKey = "user"

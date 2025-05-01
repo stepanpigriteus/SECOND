@@ -58,7 +58,7 @@ func SessionMiddleware(sessionService service.SessionService, userService servic
 							})
 
 							// Успешная аутентификация - продолжаем запрос
-							ctx := context.WithValue(r.Context(), "user", user)
+							ctx := context.WithValue(r.Context(), "user", &user)
 							next.ServeHTTP(w, r.WithContext(ctx))
 							return
 						} else {

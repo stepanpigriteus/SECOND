@@ -24,6 +24,8 @@ type server struct {
 }
 
 func NewServer(port string, db *sql.DB, logger port.Logger) *server {
+	
+
 	// Инициализация репозиториев и сервисов
 	postRepo := postgress.NewPostgresPostRepository(db)
 	postService := servicework.NewPostService(postRepo)

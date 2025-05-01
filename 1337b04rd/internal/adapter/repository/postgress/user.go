@@ -70,7 +70,7 @@ func (r *PostgresRepository) UpdateUser(ctx context.Context, user *entity.User) 
 		UPDATE users
 		SET custom_name = $1
 		WHERE id = $2
-		RETURNING id, name, custom_name
+		RETURNING id,character_name, custom_name
 	`
 	err := r.db.QueryRowContext(ctx, query, user.CustomName, user.ID).
 		Scan(&user.ID, &user.CharacterName, &user.CustomName)

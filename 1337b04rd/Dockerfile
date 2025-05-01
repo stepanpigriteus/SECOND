@@ -1,5 +1,5 @@
 # Используем официальный образ Go
-FROM golang:1.22 AS builder
+FROM golang:1.24 AS builder
 
 # Устанавливаем рабочую директорию в контейнере
 WORKDIR /app

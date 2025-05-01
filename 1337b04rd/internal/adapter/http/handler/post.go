@@ -45,35 +45,60 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Парсим multipart
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		http.Error(w, `{"error":"invalid input!"}`, http.StatusBadRequest)
 		return
 	}
 
+	fmt.Println(">>> [DEBUG] Полученные данные формы:")
+	for key, values := range r.Form {
+		fmt.Printf(">>> [DEBUG] Поле: %s, Значение: %v\n", key, values)
+	}
+
 	// Если передано имя — обновляем кастомное имя пользователя
 	name := r.FormValue("name")
 	if name != "" {
+		fmt.Printf(">>> [DEBUG] Обновляем имя пользователя: %s\n", name)
 		user.CustomName = name
 		_, err := h.userService.UpdateUser(ctx, *user)
 		if err != nil {
+			fmt.Printf(">>> [ERROR] Ошибка обновления имени: %v\n", err)
 			http.Error(w, `{"error":"failed to update custom name"}`, http.StatusInternalServerError)
 			return
 		}
 	}
 
+	// Создаем пост, используя правильные имена полей из формы
 	post := entity.Post{
-		Title:    r.FormValue("title"),
-		Content:  r.FormValue("content"),
-		ImageURL: "", // обработай загрузку файла отдельно, если надо
+		Title:    r.FormValue("subject"),
+		Content:  r.FormValue("comment"),
+		ImageURL: "",
 		UserID:   user.ID,
 	}
 
+	// Обработка файла
+	file, handler, err := r.FormFile("file")
+	if err == nil && handler != nil {
+		defer file.Close()
+
+		tempFileName := fmt.Sprintf("uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
+
+		fmt.Printf(">>> [DEBUG] Сохраняем файл: %s\n", tempFileName)
+
+		post.ImageURL = handler.Filename
+	}
+
+	fmt.Printf(">>> [DEBUG] Создаем пост: Title=%s, Content=%s, ImageURL=%s, UserID=%d\n",
+		post.Title, post.Content, post.ImageURL, post.UserID)
+
 	createdPost, err := h.postService.CreatePost(ctx, post)
 	if err != nil {
+		fmt.Printf(">>> [ERROR] Ошибка создания поста: %v\n", err)
 		http.Error(w, `{"error":"failed to create post"}`, http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Printf(">>> [DEBUG] Пост успешно создан: ID=%d\n", createdPost.ID)
 
 	if err := json.NewEncoder(w).Encode(createdPost); err != nil {
 		http.Error(w, `{"error":"failed to encode response"}`, http.StatusInternalServerError)
@@ -109,12 +134,15 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 
 	comments, err := h.commentService.GetCommentByID(r.Context(), int(postID))
 	if err != nil {
-		http.Error(w, "failed to load comments", http.StatusInternalServerError)
-		return
+		fmt.Println("Error loading comments:", err)
+		comments = []entity.Comment{}
 	}
 
 	cmVM := make([]CommentVM, 0, len(comments))
 	for _, c := range comments {
+		if c == (entity.Comment{}) {
+			continue
+		}
 		cu, err := h.userService.GetUserByID(ctx, c.UserID)
 		if err != nil {
 			continue

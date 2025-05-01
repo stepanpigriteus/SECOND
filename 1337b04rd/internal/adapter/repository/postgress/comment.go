@@ -3,6 +3,7 @@ package postgress
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"1337b04rd/internal/domain/entity"
 )
@@ -16,6 +17,25 @@ func NewPostgresCommentRepository(db *sql.DB) *PostgresCommentRepository {
 }
 
 func (r *PostgresCommentRepository) CreateComment(ctx context.Context, comment *entity.Comment) (*entity.Comment, error) {
+	query := `
+		INSERT INTO comments (content, file_url, created_at, post_id, user_id)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+	`
+
+	err := r.db.QueryRowContext(
+		ctx,
+		query,
+		comment.Content,
+		comment.FileURL,
+		comment.CreatedAt,
+		comment.PostID,
+		comment.UserID,
+	).Scan(&comment.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to insert comment: %w", err)
+	}
+
 	return comment, nil
 }
 

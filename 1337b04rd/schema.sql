@@ -31,7 +31,8 @@ CREATE TABLE comments (
     parent_id INTEGER REFERENCES comments(id),
     content TEXT NOT NULL,
     user_id INTEGER REFERENCES users(id),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    file_url TEXT DEFAULT NULL
 );
 
 -- Индексы для оптимизации запросов
