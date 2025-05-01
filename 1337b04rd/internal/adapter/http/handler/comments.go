@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/service"
-	externalfunc "1337b04rd/pkg/external_func"
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/service"
+	externalfunc "a1337b04rd/pkg/external_func"
 	"encoding/json"
 	"fmt"
 	"net/http"

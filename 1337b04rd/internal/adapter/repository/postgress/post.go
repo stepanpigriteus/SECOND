@@ -1,15 +1,18 @@
 package postgress
 
 import (
+	"a1337b04rd/internal/domain/entity"
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
-	"1337b04rd/internal/domain/entity"
+	"github.com/minio/minio-go/v7"
 )
 
 type PostgresPostRepository struct {
-	db *sql.DB
+	db          *sql.DB
+	minioClient *minio.Client
 }
 
 func NewPostgresPostRepository(db *sql.DB) *PostgresPostRepository {
@@ -51,7 +54,9 @@ func (r *PostgresPostRepository) GetPostByID(ctx context.Context, id int32) (*en
 		fmt.Println("Error during scan:", err)
 		return nil, fmt.Errorf("failed to retrieve post: %w", err)
 	}
-
+	post.ImageURL = strings.Replace(post.ImageURL, "minio", "localhost", 1)
+	post.ImageURL = strings.Replace(post.ImageURL, "https", "http", 1)
+	
 	return &post, nil
 }
 
@@ -78,10 +83,12 @@ func (r *PostgresPostRepository) ListPosts(ctx context.Context) ([]entity.PostRe
 	var posts []entity.PostRequest
 	for rows.Next() {
 		var post entity.PostRequest
+
 		if err := rows.Scan(&post.ID, &post.Title, &post.ImageURL); err != nil {
 			return nil, err
 		}
-
+		post.ImageURL = strings.Replace(post.ImageURL, "minio", "localhost", 1)
+		post.ImageURL = strings.Replace(post.ImageURL, "https", "http", 1)
 		posts = append(posts, post)
 	}
 	if err := rows.Err(); err != nil {

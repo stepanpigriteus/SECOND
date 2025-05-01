@@ -1,20 +1,20 @@
 package http
 
 import (
-	"1337b04rd/internal/adapter/http/handler"
-	"1337b04rd/internal/adapter/http/router"
-	"1337b04rd/internal/adapter/repository/postgress"
-	"1337b04rd/internal/api"
-	"1337b04rd/internal/domain/port"
-	"1337b04rd/internal/domain/service"
-	"1337b04rd/pkg/errors"
+	"a1337b04rd/internal/adapter/http/handler"
+	"a1337b04rd/internal/adapter/http/router"
+	"a1337b04rd/internal/adapter/repository/postgress"
+	"a1337b04rd/internal/api"
+	"a1337b04rd/internal/domain/port"
+	"a1337b04rd/internal/domain/service"
+	"a1337b04rd/pkg/errors"
 	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 
-	servicework "1337b04rd/internal/domain/service/service_work"
+	servicework "a1337b04rd/internal/domain/service/service_work"
 )
 
 type server struct {
@@ -25,10 +25,12 @@ type server struct {
 }
 
 func NewServer(port string, db *sql.DB, logger port.Logger) *server {
-	minioStorage, err := api.NewMinioStorage("localhost:9000", "minioadmin", "minioadmin", "posts", false)
+	minioStorage, err := api.NewMinioStorage("minio:9000", "minioadmin_new", "minioadmin_new_password", "posts", false)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fileStorageService := servicework.NewFileStorageService(minioStorage)
 
 	// Инициализация репозиториев и сервисов
 	postRepo := postgress.NewPostgresPostRepository(db)
@@ -45,6 +47,7 @@ func NewServer(port string, db *sql.DB, logger port.Logger) *server {
 		User:    userService,
 		Comment: commentService,
 		Session: sessionService,
+		Storage: fileStorageService,
 	}
 
 	return &server{

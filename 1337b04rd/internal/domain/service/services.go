@@ -5,4 +5,5 @@ type AllServices struct {
 	User    UserService
 	Comment CommentService
 	Session SessionService
+	Storage StorageService
 }

@@ -1,7 +1,7 @@
 package postgress
 
 import (
-	"1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/entity"
 	"context"
 	"database/sql"
 	"fmt"

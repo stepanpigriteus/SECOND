@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"1337b04rd/pkg/logger"
+	"a1337b04rd/pkg/logger"
 	"fmt"
 	"net/http"
 	"time"

@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/port"
-	"1337b04rd/internal/domain/port/storage"
-	"1337b04rd/internal/domain/service"
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/port"
+	apiport "a1337b04rd/internal/domain/port/api"
+	"a1337b04rd/internal/domain/service"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,10 +19,10 @@ type PostHandler struct {
 	userService    service.UserService
 	commentService service.CommentService
 	logger         port.Logger
-	fileStorage    storage.FileStorage
+	fileStorage    apiport.FileStorage
 }
 
-func NewPostHandler(ps service.PostService, us service.UserService, cs service.CommentService, fs storage.FileStorage) *PostHandler {
+func NewPostHandler(ps service.PostService, us service.UserService, cs service.CommentService, fs apiport.FileStorage) *PostHandler {
 	return &PostHandler{
 		postService:    ps,
 		userService:    us,
@@ -208,7 +208,7 @@ func (h *PostHandler) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error":"error receiving posts"}`, http.StatusInternalServerError)
 		return
 	}
-
+	fmt.Println(posts)
 	// Отправляем данные в шаблон
 	w.Header().Set("Content-Type", "text/html")
 	err = RenderTemplate(w, "catalog.html", posts)

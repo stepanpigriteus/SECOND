@@ -1,11 +1,10 @@
 package handler
 
 import (
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/service"
 	"encoding/json"
 	"net/http"
-
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/service"
 )
 
 type SessionHandler struct {

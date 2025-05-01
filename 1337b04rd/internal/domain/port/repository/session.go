@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/entity"
 	"context"
 )
 

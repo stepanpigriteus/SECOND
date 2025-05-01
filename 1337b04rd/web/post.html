@@ -27,8 +27,8 @@
         .title {
             display: flex;
             justify-content: center;
-            
         }
+        
         .post, .comment {
             border-bottom: 1px solid #E1E8ED;
             padding: 16px 0;
@@ -37,42 +37,41 @@
         .avatar_img {
             width: 50px;
         }
-    
+
         .header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 10px;
         }
-    
+
         .header img {
             border-radius: 50%;
             width: 48px;
             height: 48px;
         }
-    
+
         .header b {
             font-weight: bold;
             color: #14171A;
         }
-    
+
         .header span {
             color: #657786;
             font-size: 14px;
         }
-    
+
         .content .text {
             font-size: 15px;
             color: #14171A;
             text-align: left;
         }
-    
+
         .content img {
             border-radius: 12px;
             max-width: 100%;
             margin-top: 10px;
         }
-        
 
         .comments h2 {
             font-size: 18px;
@@ -81,25 +80,23 @@
             color: #14171A;
             text-align: left;
         }
-    
+
         .comment .content {
             display: flex;
             flex-direction: column;
             text-align: left;
         }
-    
+
         .add-comment {
             margin: 20px 5%;
             text-align: left;
-            
-
         }
-    
+
         .add-comment h3 {
             font-size: 18px;
             color: #14171A;
         }
-    
+
         .add-comment textarea {
             width: 80%;
             border: 1px solid #E1E8ED;
@@ -109,11 +106,11 @@
             font-size: 14px;
             resize: vertical;
         }
-    
+
         .add-comment input[type="file"] {
             margin-top: 10px;
         }
-    
+
         .add-comment input[type="submit"] {
             margin-top: 10px;
             padding: 8px 16px;
@@ -124,7 +121,7 @@
             font-weight: bold;
             cursor: pointer;
         }
-    
+
         .answer-button {
             background: none;
             border: none;
@@ -135,67 +132,48 @@
             padding: 0;
             text-align: left;
         }
-    
+
         .answer-button:hover {
             text-decoration: underline;
         }
 
-     
+        /* New Styles for Navigation Buttons */
+        nav {
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 20px;
+            color: #1DA1F2;
+            background-color: #fff;
+            font-weight: bold;
+            border: 1px solid #E1E8ED;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #1DA1F2;
+            color: white;
+        }
+
     </style>
-<script>
-document.getElementById('commentForm').onsubmit = function(event) {
-    event.preventDefault();
-
-    const formData = new FormData(this);
-    
-    fetch('/post/comment', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json()) // предполагаем, что сервер возвращает JSON
-    .then(data => {
-        // Обновляем список комментариев с новыми данными
-        updateComments(data.comments);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-};
-
-function updateComments(comments) {
-    const commentSection = document.querySelector('.comment-list');
-    commentSection.innerHTML = ''; // очищаем текущие комментарии
-
-    comments.forEach(comment => {
-        const commentElement = document.createElement('li');
-        commentElement.classList.add('comment');
-
-        commentElement.innerHTML = `
-            <div class="header">
-                <img src="${comment.AvatarURL}" alt="no pic" width="50" height="50">
-                <b>${comment.UserName}</b>
-                ${comment.CreatedAt}
-                ${comment.CommentID}
-            </div>
-            <div class="content">
-                ${comment.Image ? `<img src="${comment.Image}" alt="no pic" width="100" height="100">` : ''}
-                <div class="text">
-                    ${comment.Content}
-                </div>
-            </div>
-        `;
-
-        commentSection.appendChild(commentElement);
-    });
-}
-</script>
 </head>
 
 <body>
-    <header >
-    
+    <header>
+       
     </header>
+
     <main>
+        <nav>
+            <!-- Navigation links styled as Twitter-like buttons -->
+            <a href="/catalog">Catalog</a>
+            <a href="/archive">Archive</a>
+        </nav>
         <!-- Main Post -->
         <div class="post">
             <div class="header">
@@ -245,7 +223,7 @@ function updateComments(comments) {
         <div class="add-comment">
             <h3>Add a Comment</h3>
             <iframe id="hiddenFrame" name="hiddenFrame" style="display:none;"></iframe>
-            <form  class = "form" id="commentForm" action="/post/comment" method="POST" enctype="multipart/form-data" target="hiddenFrame">
+            <form  class="form" id="commentForm" action="/post/comment" method="POST" enctype="multipart/form-data" target="hiddenFrame">
                 <textarea name="comment" placeholder="Write your comment here..."></textarea>
                 <br>
                 <label for="file">File:</label>
@@ -259,16 +237,17 @@ function updateComments(comments) {
     </main>
 
     <script>
-        // JavaScript для обработки клика на кнопку "Answer"
+        // JavaScript for handling the "Reply" button
         document.querySelectorAll('.answer-button').forEach(button => {
             button.addEventListener('click', function() {
                 const parentId = this.getAttribute('data-parent-id');
-                document.getElementById('parentId').value = parentId; // Устанавливаем значение в скрытое поле формы
+                document.getElementById('parentId').value = parentId; // Set the value of the hidden field
             });
         });
         window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('parentId').value = '';
+            document.getElementById('parentId').value = '';
         });
-        </script>
+    </script>
 </body>
+
 </html>

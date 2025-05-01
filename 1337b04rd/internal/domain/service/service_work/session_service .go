@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/port/repository"
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/port/repository"
 )
 
 type sessionService struct {

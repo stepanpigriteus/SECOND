@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/entity"
 )
 
 type PostgresSessionRepository struct {

@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/service"
-	externalfunc "1337b04rd/pkg/external_func"
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/service"
+	externalfunc "a1337b04rd/pkg/external_func"
 )
 
 func SessionMiddleware(sessionService service.SessionService, userService service.UserService) func(http.Handler) http.Handler {

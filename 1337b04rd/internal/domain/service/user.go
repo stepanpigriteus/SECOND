@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/entity"
 )
 
 type UserService interface {

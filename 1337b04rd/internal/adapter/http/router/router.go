@@ -1,12 +1,11 @@
 package router
 
 import (
+	"a1337b04rd/internal/adapter/http/handler"
+	"a1337b04rd/internal/adapter/http/middleware"
+	"a1337b04rd/internal/domain/service"
 	"fmt"
 	"net/http"
-
-	"1337b04rd/internal/adapter/http/handler"
-	"1337b04rd/internal/adapter/http/middleware"
-	"1337b04rd/internal/domain/service"
 )
 
 type Route struct {

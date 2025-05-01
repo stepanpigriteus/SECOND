@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/entity"
 )
 
 type SessionService interface {
@@ -11,3 +11,5 @@ type SessionService interface {
 	GetSessionByID(ctx context.Context, id string) (entity.Session, error)
 	DeleteSession(ctx context.Context, id string) error
 }
+
+

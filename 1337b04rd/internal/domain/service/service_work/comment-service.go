@@ -6,8 +6,8 @@ import (
 	"mime/multipart"
 	"time"
 
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/port/repository"
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/port/repository"
 )
 
 type commentService struct {

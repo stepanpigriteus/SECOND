@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"1337b04rd/internal/domain/port"
+	"a1337b04rd/internal/domain/port"
 	"log/slog"
 	"os"
 )

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"1337b04rd/internal/adapter/http"
-	repository "1337b04rd/internal/adapter/repository/postgress"
-	"1337b04rd/internal/config"
-	"1337b04rd/pkg/flags"
-	"1337b04rd/pkg/logger"
+	"a1337b04rd/internal/adapter/http"
+	repository "a1337b04rd/internal/adapter/repository/postgress"
+	"a1337b04rd/internal/config"
+	"a1337b04rd/pkg/flags"
+	"a1337b04rd/pkg/logger"
 	"fmt"
 	"log"
 	"strconv"

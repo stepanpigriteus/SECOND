@@ -4,7 +4,7 @@ import (
 	"context"
 	"mime/multipart"
 
-	"1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/entity"
 )
 
 type CommentService interface {
