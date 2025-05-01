@@ -1,14 +1,13 @@
 package handler
 
 import (
+	"1337b04rd/internal/domain/entity"
+	"1337b04rd/internal/domain/service"
+	externalfunc "1337b04rd/pkg/external_func"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/service"
-	externalfunc "1337b04rd/pkg/external_func"
 )
 
 type CommentHandler struct {
@@ -52,11 +51,25 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.Context().Value("user").(*entity.User).ID
+	user := r.Context().Value("user")
+	parID := r.FormValue("parent_id")
+	var parentID int
+	if parID != "" {
+		parentID, err = strconv.Atoi(parID)
+	}
+
+	if err != nil {
+
+		http.Error(w, "invalid parent_id", http.StatusBadRequest)
+		return
+	}
+
+	userID := user.(*entity.User).ID
 	comment := entity.Comment{
-		Content: text,
-		PostID:  postID,
-		UserID:  userID,
+		Content:  text,
+		PostID:   postID,
+		UserID:   userID,
+		ParentID: parentID,
 		// Другие поля можно добавить по необходимости
 	}
 

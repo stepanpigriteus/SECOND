@@ -7,6 +7,8 @@ type CommentVM struct {
 	CommentID int32
 	Content   string
 	Image     string
+	PostID    int
+	ParentID  int
 }
 
 type PostVM struct {

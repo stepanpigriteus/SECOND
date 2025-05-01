@@ -1,16 +1,17 @@
 package handler
 
 import (
+	"1337b04rd/internal/domain/entity"
+	"1337b04rd/internal/domain/port"
+	"1337b04rd/internal/domain/port/storage"
+	"1337b04rd/internal/domain/service"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-
-	"1337b04rd/internal/domain/entity"
-	"1337b04rd/internal/domain/port"
-	"1337b04rd/internal/domain/service"
 )
 
 type PostHandler struct {
@@ -18,13 +19,15 @@ type PostHandler struct {
 	userService    service.UserService
 	commentService service.CommentService
 	logger         port.Logger
+	fileStorage    storage.FileStorage
 }
 
-func NewPostHandler(ps service.PostService, us service.UserService, cs service.CommentService) *PostHandler {
+func NewPostHandler(ps service.PostService, us service.UserService, cs service.CommentService, fs storage.FileStorage) *PostHandler {
 	return &PostHandler{
 		postService:    ps,
 		userService:    us,
 		commentService: cs,
+		fileStorage:    fs,
 	}
 }
 
@@ -76,16 +79,28 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		UserID:   user.ID,
 	}
 
-	// Обработка файла
+	// Обработка файла (если он был загружен)
 	file, handler, err := r.FormFile("file")
 	if err == nil && handler != nil {
 		defer file.Close()
 
-		tempFileName := fmt.Sprintf("uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
+		// Считываем размер файла
+		fileBytes, err := io.ReadAll(file)
+		if err != nil {
+			http.Error(w, `{"error":"failed to read file"}`, http.StatusInternalServerError)
+			return
+		}
+		fileReader := strings.NewReader(string(fileBytes))
 
-		fmt.Printf(">>> [DEBUG] Сохраняем файл: %s\n", tempFileName)
+		objectName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), handler.Filename)
 
-		post.ImageURL = handler.Filename
+		url, err := h.fileStorage.UploadFile(ctx, objectName, fileReader, int64(len(fileBytes)), handler.Header.Get("Content-Type"))
+		if err != nil {
+			http.Error(w, `{"error":"failed to upload file"}`, http.StatusInternalServerError)
+			return
+		}
+
+		post.ImageURL = url
 	}
 
 	fmt.Printf(">>> [DEBUG] Создаем пост: Title=%s, Content=%s, ImageURL=%s, UserID=%d\n",
@@ -134,7 +149,7 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 
 	comments, err := h.commentService.GetCommentByID(r.Context(), int(postID))
 	if err != nil {
-		fmt.Println("Error loading comments:", err)
+		fmt.Println("Dont have comments or error:", err)
 		comments = []entity.Comment{}
 	}
 
@@ -153,6 +168,7 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 			CreatedAt: c.CreatedAt.Format(time.RFC1123),
 			CommentID: int32(c.ID),
 			Content:   c.Content,
+			ParentID:  c.ParentID,
 		})
 	}
 
@@ -169,6 +185,9 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 7) Рендерим шаблон
+	for _, c := range comments {
+		fmt.Printf("CommentID: %d, ParentID: %d\n", c.ID, c.ParentID)
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := RenderTemplate(w, "post.html", vm); err != nil {
 		http.Error(w, "Error template rendering: "+err.Error(), http.StatusInternalServerError)

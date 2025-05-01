@@ -2,6 +2,7 @@ package handler
 
 import (
 	"1337b04rd/internal/domain/service"
+	"1337b04rd/internal/api"
 )
 
 type AllHandlers struct {
@@ -13,7 +14,7 @@ type AllHandlers struct {
 
 func NewAllHandlers(services *service.AllServices) *AllHandlers {
 	return &AllHandlers{
-		Post:    NewPostHandler(services.Post, services.User, services.Comment),
+		Post:    NewPostHandler(services.Post, services.User, services.Comment, storage.FileStorage),
 		User:    NewUserHandler(services.User),
 		Comment: NewCommentHandler(services.Comment),
 		Session: NewSessionHandler(services.Session),

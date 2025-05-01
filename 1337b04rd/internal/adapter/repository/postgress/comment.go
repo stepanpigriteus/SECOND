@@ -1,11 +1,11 @@
 package postgress
 
 import (
+	"1337b04rd/internal/domain/entity"
 	"context"
 	"database/sql"
 	"fmt"
-
-	"1337b04rd/internal/domain/entity"
+	"log"
 )
 
 type PostgresCommentRepository struct {
@@ -18,10 +18,18 @@ func NewPostgresCommentRepository(db *sql.DB) *PostgresCommentRepository {
 
 func (r *PostgresCommentRepository) CreateComment(ctx context.Context, comment *entity.Comment) (*entity.Comment, error) {
 	query := `
-		INSERT INTO comments (content, file_url, created_at, post_id, user_id)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO comments (content, file_url, created_at, post_id, user_id, parent_id)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id
 	`
+
+	// Если ParentID не задан (равен 0), передаем nil для записи NULL в базу
+	var parentID interface{}
+	if comment.ParentID != 0 {
+		parentID = comment.ParentID
+	} else {
+		parentID = nil
+	}
 
 	err := r.db.QueryRowContext(
 		ctx,
@@ -31,9 +39,11 @@ func (r *PostgresCommentRepository) CreateComment(ctx context.Context, comment *
 		comment.CreatedAt,
 		comment.PostID,
 		comment.UserID,
+		parentID,
 	).Scan(&comment.ID)
+	fmt.Println(parentID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to insert comment: %w", err)
+		return nil, fmt.Errorf("не удалось вставить комментарий: %w", err)
 	}
 
 	return comment, nil
@@ -41,12 +51,13 @@ func (r *PostgresCommentRepository) CreateComment(ctx context.Context, comment *
 
 func (r *PostgresCommentRepository) GetCommentsByPostID(ctx context.Context, postID int) ([]*entity.Comment, error) {
 	rows, err := r.db.QueryContext(ctx, `
-        SELECT id, user_id, content, created_at
+        SELECT id, user_id, content, created_at, parent_id
           FROM comments
          WHERE post_id = $1
          ORDER BY created_at ASC
     `, postID)
 	if err != nil {
+		log.Printf("Error executing query: %v", err) // Выводим ошибку при выполнении запроса
 		return nil, err
 	}
 	defer rows.Close()
@@ -54,12 +65,29 @@ func (r *PostgresCommentRepository) GetCommentsByPostID(ctx context.Context, pos
 	var out []*entity.Comment
 	for rows.Next() {
 		var c entity.Comment
-		if err := rows.Scan(&c.ID, &c.UserID, &c.Content, &c.CreatedAt); err != nil {
+		var parentID sql.NullInt64 // используем sql.NullInt64 для работы с NULL значениями
+
+		if err := rows.Scan(&c.ID, &c.UserID, &c.Content, &c.CreatedAt, &parentID); err != nil {
+			log.Printf("Error scanning row: %v", err)
 			return nil, err
 		}
+
+		// Проверяем значение parentID и присваиваем 0, если NULL
+		if parentID.Valid {
+			c.ParentID = int(parentID.Int64) // преобразуем в int, если valid
+		} else {
+			c.ParentID = 0 // Если parentID NULL, присваиваем 0
+		}
+
 		out = append(out, &c)
 	}
-	return out, rows.Err()
+
+	if err := rows.Err(); err != nil {
+		log.Printf("Error iterating rows: %v", err)
+		return nil, err
+	}
+
+	return out, nil
 }
 
 func (r *PostgresCommentRepository) DeleteComment(ctx context.Context, id int) error {

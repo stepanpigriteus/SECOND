@@ -22,7 +22,6 @@ type PostRequest struct {
 	ImageURL string `json:"image_url,omitempty"`
 }
 
-
 // {
 // 	"title": "My First Post",
 // 	"content": "This is the content of my first post.",

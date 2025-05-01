@@ -7,91 +7,212 @@
     <title>Post Page</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F5F8FA;
             margin: 0;
             padding: 0;
-            background-color: #E6E9F5;
+            display: flex;
+            justify-content: center;
+        }
+    
+        main {
+            width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #E1E8ED;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .title {
+            display: flex;
+            justify-content: center;
+            
+        }
+        .post, .comment {
+            border-bottom: 1px solid #E1E8ED;
+            padding: 16px 0;
+        }
+
+        .avatar_img {
+            width: 50px;
+        }
+    
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+    
+        .header img {
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+        }
+    
+        .header b {
+            font-weight: bold;
+            color: #14171A;
+        }
+    
+        .header span {
+            color: #657786;
+            font-size: 14px;
+        }
+    
+        .content .text {
+            font-size: 15px;
+            color: #14171A;
+            text-align: left;
+        }
+    
+        .content img {
+            border-radius: 12px;
+            max-width: 100%;
+            margin-top: 10px;
+        }
+        
+
+        .comments h2 {
+            font-size: 18px;
+            border-bottom: 1px solid #E1E8ED;
+            padding-bottom: 10px;
+            color: #14171A;
+            text-align: left;
+        }
+    
+        .comment .content {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            text-align: center;
-            margin: auto;
-            max-width: 600px;
+            text-align: left;
         }
-
-        header {
-            text-align: center;
-        }
-
-        main {
-            margin: 10px;
+    
+        .add-comment {
+            margin: 20px 5%;
+            text-align: left;
+            
 
         }
-
-        .post .header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+    
+        .add-comment h3 {
+            font-size: 18px;
+            color: #14171A;
         }
-
-        .post .content {
-            margin-top: 20px;
-            display: flex;
-            gap: 20px;
-        }
-
-        .post .content img {
-            width: 300px;
-            height: auto;
-        }
-
-        .comment .header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .comment .content {
-            margin-top: 10px;
-            display: flex;
-            gap: 20px;
-        }
-
+    
         .add-comment textarea {
-            width: 100%;
-            height: 100px;
+            width: 80%;
+            border: 1px solid #E1E8ED;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 0 5%;
+            font-size: 14px;
+            resize: vertical;
         }
-
+    
         .add-comment input[type="file"] {
             margin-top: 10px;
         }
-
+    
         .add-comment input[type="submit"] {
             margin-top: 10px;
-            display: block;
+            padding: 8px 16px;
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-weight: bold;
+            cursor: pointer;
         }
+    
+        .answer-button {
+            background: none;
+            border: none;
+            color: #1DA1F2;
+            font-size: 14px;
+            margin-top: 5px;
+            cursor: pointer;
+            padding: 0;
+            text-align: left;
+        }
+    
+        .answer-button:hover {
+            text-decoration: underline;
+        }
+
+     
     </style>
+<script>
+document.getElementById('commentForm').onsubmit = function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    
+    fetch('/post/comment', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json()) // предполагаем, что сервер возвращает JSON
+    .then(data => {
+        // Обновляем список комментариев с новыми данными
+        updateComments(data.comments);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+};
+
+function updateComments(comments) {
+    const commentSection = document.querySelector('.comment-list');
+    commentSection.innerHTML = ''; // очищаем текущие комментарии
+
+    comments.forEach(comment => {
+        const commentElement = document.createElement('li');
+        commentElement.classList.add('comment');
+
+        commentElement.innerHTML = `
+            <div class="header">
+                <img src="${comment.AvatarURL}" alt="no pic" width="50" height="50">
+                <b>${comment.UserName}</b>
+                ${comment.CreatedAt}
+                ${comment.CommentID}
+            </div>
+            <div class="content">
+                ${comment.Image ? `<img src="${comment.Image}" alt="no pic" width="100" height="100">` : ''}
+                <div class="text">
+                    ${comment.Content}
+                </div>
+            </div>
+        `;
+
+        commentSection.appendChild(commentElement);
+    });
+}
+</script>
 </head>
 
 <body>
-    <header>
-        <h1>Thread Title</h1>
+    <header >
+    
     </header>
     <main>
         <!-- Main Post -->
         <div class="post">
             <div class="header">
-                <img src="{{.UserAvatar}}" alt="no pic" width="50" height="50">
-                <b>{{.UserName}}</b>
-                {{.CreatedAt}}
-                {{.PostID}}
+                <img class="avatar_img" src="{{.UserAvatar}}" alt="no pic">
+                <div>
+                    <b>{{.UserName}}</b> <br>
+                    <span>{{.CreatedAt}}</span>
+                </div>
             </div>
             <div class="content">
-                <img src=" {{.Image}}" alt="no pic">
                 <div class="text">
                     <h3>{{.Title}}</h3>
                     {{.Content}}
                 </div>
+                {{if .Image}}
+                <img src="{{.Image}}" alt="no pic">
+                {{end}}
             </div>
         </div>
 
@@ -102,18 +223,18 @@
                 {{range .Comments}}
                 <li class="comment">
                     <div class="header">
-                        <img src="{{.AvatarURL}}" alt="no pic" width="50" height="50">
-                        <b>{{.UserName}}</b>
-                        {{.CreatedAt}}
-                        {{.CommentID}}
+                        <img src="{{.AvatarURL}}" alt="no pic">
+                        <div>
+                            <b>{{.UserName}}</b> <br>
+                            <span>{{.CreatedAt}} · ParentID: {{.ParentID}}</span>
+                        </div>
                     </div>
                     <div class="content">
+                        <div class="text">{{.Content}}</div>
                         {{if .Image}}
-                        <img src="{{.Image}}" alt="no pic" width="100" height="100">
+                        <img src="{{.Image}}" alt="no pic">
                         {{end}}
-                        <div class="text">
-                            {{.Content}}
-                        </div>
+                        <button type="button" class="answer-button" data-parent-id="{{.CommentID}}">Reply</button>
                     </div>
                 </li>
                 {{end}}
@@ -123,17 +244,31 @@
         <!-- Add a Comment Section -->
         <div class="add-comment">
             <h3>Add a Comment</h3>
-            <form action="/post/comment" method="POST" enctype="multipart/form-data">
+            <iframe id="hiddenFrame" name="hiddenFrame" style="display:none;"></iframe>
+            <form  class = "form" id="commentForm" action="/post/comment" method="POST" enctype="multipart/form-data" target="hiddenFrame">
                 <textarea name="comment" placeholder="Write your comment here..."></textarea>
                 <br>
                 <label for="file">File:</label>
                 <input type="hidden" name="post_id" value="{{.PostID}}">
-                <input id="file" name="file" type="file">
+                <input type="hidden" name="parent_id" id="parentId">
+                <input type="file" name="file" id="file">
                 <br>
                 <input type="submit" value="Submit">
             </form>
         </div>
     </main>
-</body>
 
+    <script>
+        // JavaScript для обработки клика на кнопку "Answer"
+        document.querySelectorAll('.answer-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const parentId = this.getAttribute('data-parent-id');
+                document.getElementById('parentId').value = parentId; // Устанавливаем значение в скрытое поле формы
+            });
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('parentId').value = '';
+        });
+        </script>
+</body>
 </html>

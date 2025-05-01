@@ -28,7 +28,7 @@ CREATE TABLE posts (
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,
     post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
-    parent_id INTEGER REFERENCES comments(id),
+    parent_id INTEGER REFERENCES comments(id) DEFAULT NULL,
     content TEXT NOT NULL,
     user_id INTEGER REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
