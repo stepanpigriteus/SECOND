@@ -169,6 +169,7 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 			CommentID: int32(c.ID),
 			Content:   c.Content,
 			ParentID:  c.ParentID,
+			Image:     c.FileURL,
 		})
 	}
 

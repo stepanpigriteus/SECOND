@@ -15,7 +15,7 @@ func NewAllHandlers(services *service.AllServices) *AllHandlers {
 	return &AllHandlers{
 		Post:    NewPostHandler(services.Post, services.User, services.Comment, services.Storage),
 		User:    NewUserHandler(services.User),
-		Comment: NewCommentHandler(services.Comment),
+		Comment: NewCommentHandler(services.Comment, services.Storage),
 		Session: NewSessionHandler(services.Session),
 	}
 }

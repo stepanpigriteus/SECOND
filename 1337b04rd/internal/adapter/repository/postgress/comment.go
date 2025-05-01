@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 )
 
 type PostgresCommentRepository struct {
@@ -51,7 +52,7 @@ func (r *PostgresCommentRepository) CreateComment(ctx context.Context, comment *
 
 func (r *PostgresCommentRepository) GetCommentsByPostID(ctx context.Context, postID int) ([]*entity.Comment, error) {
 	rows, err := r.db.QueryContext(ctx, `
-        SELECT id, user_id, content, created_at, parent_id
+        SELECT id, user_id, content, created_at, parent_id, file_url
           FROM comments
          WHERE post_id = $1
          ORDER BY created_at ASC
@@ -67,7 +68,7 @@ func (r *PostgresCommentRepository) GetCommentsByPostID(ctx context.Context, pos
 		var c entity.Comment
 		var parentID sql.NullInt64 // используем sql.NullInt64 для работы с NULL значениями
 
-		if err := rows.Scan(&c.ID, &c.UserID, &c.Content, &c.CreatedAt, &parentID); err != nil {
+		if err := rows.Scan(&c.ID, &c.UserID, &c.Content, &c.CreatedAt, &parentID, &c.FileURL); err != nil {
 			log.Printf("Error scanning row: %v", err)
 			return nil, err
 		}
@@ -78,6 +79,8 @@ func (r *PostgresCommentRepository) GetCommentsByPostID(ctx context.Context, pos
 		} else {
 			c.ParentID = 0 // Если parentID NULL, присваиваем 0
 		}
+		c.FileURL = strings.Replace(c.FileURL, "minio", "localhost", 1)
+		c.FileURL = strings.Replace(c.FileURL, "https", "http", 1)
 
 		out = append(out, &c)
 	}

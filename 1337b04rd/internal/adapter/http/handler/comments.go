@@ -2,20 +2,25 @@ package handler
 
 import (
 	"a1337b04rd/internal/domain/entity"
+	apiport "a1337b04rd/internal/domain/port/api"
 	"a1337b04rd/internal/domain/service"
 	externalfunc "a1337b04rd/pkg/external_func"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type CommentHandler struct {
 	commentService service.CommentService
+	fileStorage    apiport.FileStorage
 }
 
-func NewCommentHandler(commentService service.CommentService) *CommentHandler {
-	return &CommentHandler{commentService: commentService}
+func NewCommentHandler(commentService service.CommentService, fs apiport.FileStorage) *CommentHandler {
+	return &CommentHandler{commentService: commentService, fileStorage: fs}
 }
 
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
@@ -31,17 +36,28 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	text := r.FormValue("comment")
-	file, fileHeader, err := r.FormFile("file")
-	if err != nil && err != http.ErrMissingFile {
-		http.Error(w, `{"error":"failed to read file"}`, http.StatusBadRequest)
-		return
-	}
-	defer func() {
-		if file != nil {
-			file.Close()
-		}
-	}()
+	file, handler, err := r.FormFile("file")
+	var urlFile string
+	if err == nil && handler != nil {
+		defer file.Close()
 
+		// Считываем размер файла
+		fileBytes, err := io.ReadAll(file)
+		if err != nil {
+			http.Error(w, `{"error":"failed to read file"}`, http.StatusInternalServerError)
+			return
+		}
+		fileReader := strings.NewReader(string(fileBytes))
+
+		objectName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), handler.Filename)
+
+		urlFile, err = h.fileStorage.UploadFile(ctx, objectName, fileReader, int64(len(fileBytes)), handler.Header.Get("Content-Type"))
+		if err != nil {
+			http.Error(w, `{"error":"failed to upload file"}`, http.StatusInternalServerError)
+			return
+		}
+
+	}
 	postIDStr := r.FormValue("post_id")
 
 	fmt.Println(">>> post ID", postIDStr)
@@ -70,11 +86,12 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		PostID:   postID,
 		UserID:   userID,
 		ParentID: parentID,
+		FileURL:  urlFile,
 		// Другие поля можно добавить по необходимости
 	}
 
 	// Вызов сервиса
-	createdComment, err := h.commentService.CreateComment(ctx, comment, fileHeader)
+	createdComment, err := h.commentService.CreateComment(ctx, comment, handler)
 	if err != nil {
 		http.Error(w, `{"error":"failed to create comment"}`, http.StatusInternalServerError)
 		return
@@ -100,6 +117,7 @@ func (h *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) 
 	ctx := r.Context()
 
 	comment, err := h.commentService.GetCommentByID(ctx, id)
+
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(comment); err != nil {
 		http.Error(w, `{"error":"failed to encode response"}`, http.StatusInternalServerError)
