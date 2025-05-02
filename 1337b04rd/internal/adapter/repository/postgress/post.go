@@ -163,7 +163,8 @@ func (r *PostgresPostRepository) ListArchivedPosts(ctx context.Context) ([]entit
 		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.ImageURL, &post.CreatedAt, &post.DeletedAt); err != nil {
 			return []entity.PostRequest{}, err
 		}
-
+		post.ImageURL = strings.Replace(post.ImageURL, "minio", "localhost", 1)
+		post.ImageURL = strings.Replace(post.ImageURL, "https", "http", 1)
 		posts = append(posts, post)
 	}
 

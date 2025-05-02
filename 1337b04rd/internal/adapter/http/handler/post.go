@@ -1,10 +1,6 @@
 package handler
 
 import (
-	"a1337b04rd/internal/domain/entity"
-	"a1337b04rd/internal/domain/port"
-	apiport "a1337b04rd/internal/domain/port/api"
-	"a1337b04rd/internal/domain/service"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,6 +10,11 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/port"
+	apiport "a1337b04rd/internal/domain/port/api"
+	"a1337b04rd/internal/domain/service"
 )
 
 type PostHandler struct {
@@ -24,17 +25,18 @@ type PostHandler struct {
 	fileStorage    apiport.FileStorage
 }
 
-func NewPostHandler(ps service.PostService, us service.UserService, cs service.CommentService, fs apiport.FileStorage) *PostHandler {
+func NewPostHandler(ps service.PostService, us service.UserService, cs service.CommentService, fs apiport.FileStorage, logger port.Logger) *PostHandler {
 	return &PostHandler{
 		postService:    ps,
 		userService:    us,
 		commentService: cs,
 		fileStorage:    fs,
+		logger:         logger,
 	}
 }
 
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(">>> CreatePost handler called")
+	h.logger.Info(">>> CreatePost handler called")
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
@@ -55,19 +57,18 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(">>> [DEBUG] Полученные данные формы:")
 	for key, values := range r.Form {
-		fmt.Printf(">>> [DEBUG] Поле: %s, Значение: %v\n", key, values)
+		h.logger.Info(">>> [DEBUG] Поле: %s, Значение: %v\n", key, values)
 	}
 
 	// Если передано имя — обновляем кастомное имя пользователя
 	name := r.FormValue("name")
 	if name != "" {
-		fmt.Printf(">>> [DEBUG] Обновляем имя пользователя: %s\n", name)
+		h.logger.Info(">>> [DEBUG] Обновляем имя пользователя: %s\n", name)
 		user.CustomName = name
 		_, err := h.userService.UpdateUser(ctx, *user)
 		if err != nil {
-			fmt.Printf(">>> [ERROR] Ошибка обновления имени: %v\n", err)
+			h.logger.Error(">>> [ERROR] Ошибка обновления имени: %v\n", err)
 			http.Error(w, `{"error":"failed to update custom name"}`, http.StatusInternalServerError)
 			return
 		}
@@ -105,17 +106,17 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		post.ImageURL = url
 	}
 
-	fmt.Printf(">>> [DEBUG] Создаем пост: Title=%s, Content=%s, ImageURL=%s, UserID=%d\n",
+	h.logger.Info(">>> [DEBUG] Создаем пост: Title=%s, Content=%s, ImageURL=%s, UserID=%d\n",
 		post.Title, post.Content, post.ImageURL, post.UserID)
 
 	createdPost, err := h.postService.CreatePost(ctx, post)
 	if err != nil {
-		fmt.Printf(">>> [ERROR] Ошибка создания поста: %v\n", err)
+		h.logger.Error(">>> [ERROR] Ошибка создания поста: %v\n", err)
 		http.Error(w, `{"error":"failed to create post"}`, http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Printf(">>> [DEBUG] Пост успешно создан: ID=%d\n", createdPost.ID)
+	h.logger.Info(">>> [DEBUG] Пост успешно создан: ID=%d\n", createdPost.ID)
 
 	if err := json.NewEncoder(w).Encode(createdPost); err != nil {
 		http.Error(w, `{"error":"failed to encode response"}`, http.StatusInternalServerError)
@@ -123,6 +124,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
+	h.logger.Info(">>>GetPostByID handler called")
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {
 		http.Error(w, "invalid path", http.StatusBadRequest)
@@ -151,7 +153,7 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 
 	comments, err := h.commentService.GetCommentByID(r.Context(), int(postID))
 	if err != nil {
-		fmt.Println("Dont have comments or error:", err)
+		h.logger.Warn("Dont have comments or error:", err)
 		comments = []entity.Comment{}
 	}
 
@@ -190,7 +192,7 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 
 	// 7) Рендерим шаблон
 	for _, c := range comments {
-		fmt.Printf("CommentID: %d, ParentID: %d\n", c.ID, c.ParentID)
+		h.logger.Info("CommentID: %d, ParentID: %d\n", c.ID, c.ParentID)
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := RenderTemplate(w, "post.html", vm); err != nil {
@@ -213,6 +215,7 @@ func (h *PostHandler) CreatePostPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
+	h.logger.Info(">>>GetPostsHandler called")
 	ctx := r.Context()
 	posts, err := h.postService.ListPosts(ctx)
 	if err != nil {
@@ -220,7 +223,6 @@ func (h *PostHandler) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error":"error receiving posts"}`, http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(posts)
 
 	w.Header().Set("Content-Type", "text/html")
 	err = RenderTemplate(w, "catalog.html", posts)
@@ -238,53 +240,31 @@ func (h *PostHandler) GetArchivedPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if h.logger == nil {
-		fmt.Println("Логгер не инициализирован, используем стандартный вывод")
-	} else {
-		h.logger.Debug("GetArchivedPosts: начинаем выполнение")
-	}
+	h.logger.Debug("GetArchivedPosts: начинаем выполнение")
 
 	posts, err := h.postService.ListArchivedPosts(ctx)
 	if err != nil {
-		if h.logger != nil {
-			h.logger.Error("Ошибка при получении постов", err)
-		} else {
-			fmt.Printf("Ошибка при получении постов: %v\n", err)
-		}
+		h.logger.Error("Ошибка при получении постов", err)
 		http.Error(w, `{"error":"error receiving posts"}`, http.StatusInternalServerError)
 		return
 	}
-
 	if posts == nil {
 		posts = []entity.PostRequest{}
 	}
-
-	if h.logger != nil {
-		h.logger.Debug("Fetched archived posts:", posts)
-	} else {
-		fmt.Printf("Получено архивных постов: %d\n", len(posts))
-	}
+	h.logger.Debug("Fetched archived posts:", posts)
 
 	w.Header().Set("Content-Type", "text/html")
 
 	tmplPath := filepath.Join("web", "archive.html")
 	if _, err := template.ParseFiles(tmplPath); err != nil {
-		if h.logger != nil {
-			h.logger.Error("Ошибка при парсинге шаблона", err)
-		} else {
-			fmt.Printf("Ошибка при парсинге шаблона: %v\n", err)
-		}
+		h.logger.Error("Ошибка при парсинге шаблона", err)
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		return
 	}
 
 	err = RenderTemplate(w, "archive.html", posts)
 	if err != nil {
-		if h.logger != nil {
-			h.logger.Error("Ошибка при рендеринге шаблона", err)
-		} else {
-			fmt.Printf("Ошибка при рендеринге шаблона: %v\n", err)
-		}
+		h.logger.Error("Ошибка при рендеринге шаблона", err)
 		http.Error(w, "Error template rendering", http.StatusInternalServerError)
 		return
 	}

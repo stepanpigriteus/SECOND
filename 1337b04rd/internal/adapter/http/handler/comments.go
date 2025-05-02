@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/port"
 	apiport "a1337b04rd/internal/domain/port/api"
 	"a1337b04rd/internal/domain/service"
 	externalfunc "a1337b04rd/pkg/external_func"
@@ -19,14 +20,15 @@ type CommentHandler struct {
 	commentService service.CommentService
 	postService    service.PostService
 	fileStorage    apiport.FileStorage
+	logger         port.Logger
 }
 
-func NewCommentHandler(commentService service.CommentService, fs apiport.FileStorage, postService service.PostService) *CommentHandler {
-	return &CommentHandler{commentService: commentService, fileStorage: fs, postService: postService}
+func NewCommentHandler(commentService service.CommentService, fs apiport.FileStorage, postService service.PostService, logger port.Logger) *CommentHandler {
+	return &CommentHandler{commentService: commentService, fileStorage: fs, postService: postService, logger: logger}
 }
 
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(">>> CreateComment handler called")
+	h.logger.Info(">>> CreateComment handler called")
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
@@ -41,8 +43,6 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	var urlFile string
 	if err == nil && handler != nil {
 		defer file.Close()
-
-		// Считываем размер файла
 		fileBytes, err := io.ReadAll(file)
 		if err != nil {
 			http.Error(w, `{"error":"failed to read file"}`, http.StatusInternalServerError)
@@ -61,14 +61,12 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	postIDStr := r.FormValue("post_id")
 
-	fmt.Println(">>> post ID", postIDStr)
+	h.logger.Info(">>> post ID", postIDStr)
 	postID, err := strconv.Atoi(postIDStr)
 	if err != nil {
 		http.Error(w, "invalid post_id", http.StatusBadRequest)
 		return
 	}
-
-	
 
 	user := r.Context().Value("user")
 	parID := r.FormValue("parent_id")
@@ -106,7 +104,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(">>> GetCommentByID handler called")
+	h.logger.Info(">>> GetCommentByID handler called")
 	if h.commentService == nil {
 		http.Error(w, `{"error":"commentService is not initialized"}`, http.StatusInternalServerError)
 		return
@@ -120,9 +118,14 @@ func (h *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) 
 	ctx := r.Context()
 
 	comment, err := h.commentService.GetCommentByID(ctx, id)
+	if err != nil {
+		http.Error(w, `{"error":"error comment extraction"}`, http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(comment); err != nil {
+		h.logger.Error("error: failed to encode response")
 		http.Error(w, `{"error":"failed to encode response"}`, http.StatusInternalServerError)
 	}
 }

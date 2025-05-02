@@ -3,11 +3,9 @@ package http
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"a1337b04rd/internal/adapter/http/handler"
 	"a1337b04rd/internal/adapter/http/router"
@@ -72,7 +70,7 @@ func (s *server) RunServer() {
 	mux := http.NewServeMux()
 
 	// Инициализация хендлеров
-	handlers := handler.NewAllHandlers(s.services)
+	handlers := handler.NewAllHandlers(s.services, s.logger)
 
 	// Регистрируем роуты
 	router.RegisterRoutes(mux, handlers, s.services.Session, s.services.User)
@@ -103,24 +101,5 @@ func (h *handleDef) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
-	}
-}
-
-func ScheduleInactivePostDeletion(db *sql.DB) {
-	ticker := time.NewTicker(10 * time.Minute)
-	fmt.Println()
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			// Запускаем функцию для удаления неактивных постов
-			_, err := db.Exec("SELECT mark_inactive_posts_as_deleted()")
-			if err != nil {
-				log.Printf("Ошибка при вызове функции mark_inactive_posts_as_deleted: %v", err)
-			} else {
-				log.Println("Функция mark_inactive_posts_as_deleted выполнена успешно.")
-			}
-		}
 	}
 }
