@@ -44,40 +44,35 @@ CREATE INDEX idx_sessions_expires_at ON sessions(expires_at);
 
 
 
-CREATE OR REPLACE FUNCTION update_post_last_comment_time()
-RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE posts
-    SET last_comment_at = NEW.created_at,
-        updated_at = CURRENT_TIMESTAMP
-    WHERE id = NEW.post_id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Создаем триггер, который будет обновлять last_comment_at при добавлении нового комментария
-DROP TRIGGER IF EXISTS update_post_comment_time ON comments;
-CREATE TRIGGER update_post_comment_time
-AFTER INSERT ON comments
-FOR EACH ROW
-EXECUTE FUNCTION update_post_last_comment_time();
-
--- Создаем функцию для периодического удаления постов
-CREATE OR REPLACE FUNCTION mark_inactive_posts_as_deleted()
-RETURNS void AS $$
-BEGIN
-    -- Отмечаем как удаленные посты без комментариев старше 10 минут
-    UPDATE posts
-    SET deleted_at = CURRENT_TIMESTAMP
-    WHERE id NOT IN (SELECT DISTINCT post_id FROM comments)
-      AND deleted_at IS NULL
-      AND created_at < (CURRENT_TIMESTAMP - INTERVAL '10 minutes');
-
-    -- Отмечаем как удаленные посты с комментариями, но без активности более 15 минут
-    UPDATE posts
-    SET deleted_at = CURRENT_TIMESTAMP
-    WHERE id IN (SELECT DISTINCT post_id FROM comments)
-      AND deleted_at IS NULL
-      AND last_comment_at < (CURRENT_TIMESTAMP - INTERVAL '15 minutes');
-END;
-$$ LANGUAGE plpgsql;
+-- CREATE OR REPLACE FUNCTION mark_inactive_posts_as_deleted() RETURNS void AS $$
+-- DECLARE
+--     deleted_without_comments INTEGER;
+--     deleted_inactive INTEGER;
+-- BEGIN
+--     -- Отмечаем как удаленные посты без комментариев старше 10 минут
+--     WITH deleted AS (
+--         UPDATE posts
+--         SET deleted_at = CURRENT_TIMESTAMP
+--         WHERE id NOT IN (SELECT DISTINCT post_id FROM comments)
+--           AND deleted_at IS NULL
+--           AND created_at < (CURRENT_TIMESTAMP - INTERVAL '10 minutes')
+--         RETURNING id
+--     )
+--     SELECT COUNT(*) INTO deleted_without_comments FROM deleted;
+    
+--     -- Отмечаем как удаленные посты с комментариями, но без активности более 15 минут
+--     WITH deleted AS (
+--         UPDATE posts
+--         SET deleted_at = CURRENT_TIMESTAMP
+--         WHERE id IN (SELECT DISTINCT post_id FROM comments)
+--           AND deleted_at IS NULL
+--           AND last_comment_at < (CURRENT_TIMESTAMP - INTERVAL '15 minutes')
+--         RETURNING id
+--     )
+--     SELECT COUNT(*) INTO deleted_inactive FROM deleted;
+    
+--     -- Логируем результаты
+--     RAISE NOTICE 'Удалено постов без комментариев: %, с неактивными комментариями: %', 
+--                  deleted_without_comments, deleted_inactive;
+-- END;
+-- $$ LANGUAGE plpgsql;

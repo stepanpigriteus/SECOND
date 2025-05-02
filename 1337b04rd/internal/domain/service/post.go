@@ -1,8 +1,9 @@
 package service
 
 import (
-	"a1337b04rd/internal/domain/entity"
 	"context"
+
+	"a1337b04rd/internal/domain/entity"
 )
 
 type PostService interface {

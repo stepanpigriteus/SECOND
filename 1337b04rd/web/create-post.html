@@ -73,6 +73,32 @@
             </table>
         </form>
     </main>
+    <script>
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault(); // Отключаем стандартное поведение (переход)
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/post', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Можно очистить форму, показать сообщение, обновить часть страницы и т.д.
+                    alert('Пост отправлен успешно!');
+                    form.reset();
+                } else {
+                    alert('Ошибка при отправке поста.');
+                }
+            } catch (error) {
+                alert('Сетевая ошибка: ' + error.message);
+            }
+        });
+    </script>
 </body>
 
 </html>

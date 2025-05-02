@@ -1,11 +1,6 @@
 package handler
 
 import (
-	"a1337b04rd/internal/domain/entity"
-	"a1337b04rd/internal/domain/port"
-	apiport "a1337b04rd/internal/domain/port/api"
-	"a1337b04rd/internal/domain/service"
-	externalfunc "a1337b04rd/pkg/external_func"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,20 +8,25 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"a1337b04rd/internal/domain/entity"
+	apiport "a1337b04rd/internal/domain/port/api"
+	"a1337b04rd/internal/domain/service"
+	externalfunc "a1337b04rd/pkg/external_func"
 )
 
 type CommentHandler struct {
 	commentService service.CommentService
+	postService    service.PostService
 	fileStorage    apiport.FileStorage
-	logger         port.Logger
 }
 
-func NewCommentHandler(commentService service.CommentService, fs apiport.FileStorage) *CommentHandler {
-	return &CommentHandler{commentService: commentService, fileStorage: fs}
+func NewCommentHandler(commentService service.CommentService, fs apiport.FileStorage, postService service.PostService) *CommentHandler {
+	return &CommentHandler{commentService: commentService, fileStorage: fs, postService: postService}
 }
 
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
-	h.logger.Info(">>> CreateComment handler called")
+	fmt.Println(">>> CreateComment handler called")
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
@@ -61,12 +61,14 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	postIDStr := r.FormValue("post_id")
 
-	h.logger.Info(">>> post ID", postIDStr)
+	fmt.Println(">>> post ID", postIDStr)
 	postID, err := strconv.Atoi(postIDStr)
 	if err != nil {
 		http.Error(w, "invalid post_id", http.StatusBadRequest)
 		return
 	}
+
+	
 
 	user := r.Context().Value("user")
 	parID := r.FormValue("parent_id")
@@ -104,7 +106,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) {
-	h.logger.Info(">>> GetCommentByID handler called")
+	fmt.Println(">>> GetCommentByID handler called")
 	if h.commentService == nil {
 		http.Error(w, `{"error":"commentService is not initialized"}`, http.StatusInternalServerError)
 		return

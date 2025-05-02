@@ -1,21 +1,25 @@
 package servicework
 
 import (
-	"a1337b04rd/internal/domain/entity"
-	"a1337b04rd/internal/domain/port/repository"
 	"context"
+	"errors"
 	"fmt"
 	"mime/multipart"
 	"time"
+
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/port/repository"
 )
 
 type commentService struct {
 	commentRepo repository.CommentRepository
+	postRepo    repository.PostRepository
 }
 
-func NewCommentService(commentRepo repository.CommentRepository) *commentService {
+func NewCommentService(commentRepo repository.CommentRepository, postRepo repository.PostRepository) *commentService {
 	return &commentService{
 		commentRepo: commentRepo,
+		postRepo:    postRepo,
 	}
 }
 
@@ -27,6 +31,15 @@ func (s *commentService) CreateComment(ctx context.Context, comment entity.Comme
 	createdComment, err := s.commentRepo.CreateComment(ctx, &comment)
 	if err != nil {
 		return entity.Comment{}, err
+	}
+
+	fmt.Println("here<<>>>< ", comment.PostID)
+	if s.postRepo == nil {
+		return entity.Comment{}, errors.New("post repository is not initialized")
+	}
+	err = s.postRepo.UpdatePost(ctx, comment.PostID)
+	if err != nil {
+		return entity.Comment{}, fmt.Errorf("не удалось обновить время последнего комментария: %w", err)
 	}
 
 	return *createdComment, nil

@@ -1,13 +1,6 @@
 package http
 
 import (
-	"a1337b04rd/internal/adapter/http/handler"
-	"a1337b04rd/internal/adapter/http/router"
-	"a1337b04rd/internal/adapter/repository/postgress"
-	"a1337b04rd/internal/api"
-	"a1337b04rd/internal/domain/port"
-	"a1337b04rd/internal/domain/service"
-	"a1337b04rd/pkg/errors"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -15,6 +8,14 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"a1337b04rd/internal/adapter/http/handler"
+	"a1337b04rd/internal/adapter/http/router"
+	"a1337b04rd/internal/adapter/repository/postgress"
+	"a1337b04rd/internal/api"
+	"a1337b04rd/internal/domain/port"
+	"a1337b04rd/internal/domain/service"
+	"a1337b04rd/pkg/errors"
 
 	servicework "a1337b04rd/internal/domain/service/service_work"
 )
@@ -40,7 +41,7 @@ func NewServer(port string, db *sql.DB, logger port.Logger) *server {
 	userRepo := postgress.NewPostgresUserRepository(db)
 	userService := servicework.NewUserService(userRepo)
 	commentRepo := postgress.NewPostgresCommentRepository(db)
-	commentService := servicework.NewCommentService(commentRepo)
+	commentService := servicework.NewCommentService(commentRepo, postRepo)
 	sessionRepo := postgress.NewPostgresSessionRepository(db)
 	sessionService := servicework.NewSessionService(sessionRepo)
 

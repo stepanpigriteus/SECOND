@@ -1,12 +1,13 @@
 package servicework
 
 import (
-	"a1337b04rd/internal/domain/entity"
-	"a1337b04rd/internal/domain/port/repository"
-	"a1337b04rd/internal/domain/service"
 	"context"
 	"fmt"
 	"time"
+
+	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/port/repository"
+	"a1337b04rd/internal/domain/service"
 )
 
 type postService struct {
@@ -41,14 +42,8 @@ func (s *postService) GetPostByID(ctx context.Context, id int32) (entity.Post, e
 
 func (s *postService) UpdatePost(ctx context.Context, id int32, post entity.Post) (entity.Post, error) {
 	fmt.Println(">>> UpdatePost service called")
-	post.ID = id
-	post.UpdatedAt = time.Now()
-
-	updatedPost, err := s.postRepo.UpdatePost(ctx, &post)
-	if err != nil {
-		return entity.Post{}, err
-	}
-	return *updatedPost, nil
+	updatedPost := entity.Post{}
+	return updatedPost, nil
 }
 
 func (s *postService) DeletePost(ctx context.Context, id int32) error {
@@ -74,5 +69,5 @@ func (s *postService) ListArchivedPosts(ctx context.Context) ([]entity.PostReque
 		return []entity.PostRequest{}, nil
 	}
 
-	return posts, nil 
+	return posts, nil
 }

@@ -1,14 +1,16 @@
 package main
 
 import (
-	"a1337b04rd/internal/adapter/http"
-	repository "a1337b04rd/internal/adapter/repository/postgress"
-	"a1337b04rd/internal/config"
-	"a1337b04rd/pkg/flags"
-	"a1337b04rd/pkg/logger"
 	"fmt"
 	"log"
 	"strconv"
+
+	"a1337b04rd/internal/adapter/http"
+	repository "a1337b04rd/internal/adapter/repository/postgress"
+	"a1337b04rd/internal/config"
+	externalfunc "a1337b04rd/pkg/external_func"
+	"a1337b04rd/pkg/flags"
+	"a1337b04rd/pkg/logger"
 
 	_ "github.com/lib/pq"
 )
@@ -32,11 +34,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not connect to db: %v", err)
 	}
+	defer db.Close()
+	if err := externalfunc.InitPostTriggers(db); err != nil {
+		log.Fatalf("triggers init failed: %v", err)
+	}
 
 	server := http.NewServer(strconv.Itoa(port), db, logger)
+	go externalfunc.StartCleanupRoutine(db)
 	server.RunServer()
-	go http.ScheduleInactivePostDeletion(db)
-
-	// Приложение работает
-	select {}
 }

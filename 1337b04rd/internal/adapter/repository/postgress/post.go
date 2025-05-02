@@ -1,11 +1,14 @@
 package postgress
 
 import (
-	"a1337b04rd/internal/domain/entity"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"log"
 	"strings"
+
+	"a1337b04rd/internal/domain/entity"
 
 	"github.com/minio/minio-go/v7"
 )
@@ -60,8 +63,49 @@ func (r *PostgresPostRepository) GetPostByID(ctx context.Context, id int32) (*en
 	return &post, nil
 }
 
-func (r *PostgresPostRepository) UpdatePost(ctx context.Context, post *entity.Post) (*entity.Post, error) {
-	return post, nil
+func (r *PostgresPostRepository) UpdatePost(ctx context.Context, postID int) error {
+	if r.db == nil {
+		return errors.New("database connection is nil")
+	}
+
+	// Логирование перед выполнением запроса
+	log.Printf("Attempting to update post with postID: %d", postID)
+
+	// Проверка существования записи с заданным postID
+	var exists bool
+	err := r.db.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM posts WHERE id = $1)", postID).Scan(&exists)
+	if err != nil {
+		log.Printf("Error checking if post exists: %v", err)
+		return err
+	}
+
+	if !exists {
+		log.Printf("Post with postID %d does not exist", postID)
+		return fmt.Errorf("post with ID %d does not exist", postID)
+	}
+
+	// Выполнение обновления
+	query := `UPDATE posts SET last_comment_at = NOW() WHERE id = $1`
+	result, err := r.db.ExecContext(ctx, query, postID)
+	if err != nil {
+		log.Printf("Error executing query: %v", err)
+		return err
+	}
+
+	// Логирование результата
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Printf("Error getting rows affected: %v", err)
+		return err
+	}
+
+	log.Printf("Rows affected: %d for postID: %d", rowsAffected, postID)
+
+	if rowsAffected == 0 {
+		log.Printf("No rows updated for postID: %d", postID)
+	}
+
+	return nil
 }
 
 func (r *PostgresPostRepository) DeletePost(ctx context.Context, id int32) error {
