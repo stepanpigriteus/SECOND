@@ -16,3 +16,5 @@ if ! mc ls local/board-storage > /dev/null 2>&1; then
 else
   echo "✅ Bucket 'board-storage' already exists"
 fi
+
+mc policy set public local/board-storage

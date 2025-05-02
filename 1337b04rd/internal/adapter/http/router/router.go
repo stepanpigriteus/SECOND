@@ -36,6 +36,7 @@ func RegisterRoutes(mux *http.ServeMux, handlers *handler.AllHandlers, sessionSe
 
 		// Лядские темплейты
 		{Method: http.MethodGet, Path: "/catalog", Handler: handlers.Post.GetPostsHandler, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware, middleware.SessionMiddleware(sessionService, userService)}},
+		{Method: http.MethodGet, Path: "/archive", Handler: handlers.Post.GetArchivedPosts, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware, middleware.SessionMiddleware(sessionService, userService)}},
 		{Method: http.MethodGet, Path: "/create-post", Handler: handlers.Post.CreatePostPage, Middlewares: []func(http.Handler) http.Handler{middleware.LoggerMiddleware, middleware.SessionMiddleware(sessionService, userService)}},
 
 		// Роут для хреновых сессий

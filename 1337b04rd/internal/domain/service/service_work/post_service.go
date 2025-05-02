@@ -1,13 +1,12 @@
 package servicework
 
 import (
-	"context"
-	"fmt"
-	"time"
-
 	"a1337b04rd/internal/domain/entity"
 	"a1337b04rd/internal/domain/port/repository"
 	"a1337b04rd/internal/domain/service"
+	"context"
+	"fmt"
+	"time"
 )
 
 type postService struct {
@@ -59,4 +58,21 @@ func (s *postService) DeletePost(ctx context.Context, id int32) error {
 
 func (s *postService) ListPosts(ctx context.Context) ([]entity.PostRequest, error) {
 	return s.postRepo.ListPosts(ctx)
+}
+
+func (s *postService) ListArchivedPosts(ctx context.Context) ([]entity.PostRequest, error) {
+	if s.postRepo == nil {
+		return []entity.PostRequest{}, fmt.Errorf("post repository not initialized")
+	}
+
+	posts, err := s.postRepo.ListArchivedPosts(ctx)
+	if err != nil {
+		return []entity.PostRequest{}, err
+	}
+
+	if posts == nil {
+		return []entity.PostRequest{}, nil
+	}
+
+	return posts, nil 
 }

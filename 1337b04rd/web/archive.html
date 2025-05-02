@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1337b04rd</title>
     <style>
@@ -12,7 +14,8 @@
             font-family: Arial, sans-serif;
         }
 
-        header, footer {
+        header,
+        footer {
             text-align: center;
             padding: 10px 0;
         }
@@ -22,16 +25,16 @@
             text-decoration: none;
             color: blue;
         }
+
         nav a:hover {
             text-decoration: underline;
         }
 
         /* Styles for the grid layout */
-        .post-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            padding: 20px;
+        .posts .list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .post {
@@ -41,6 +44,9 @@
             padding: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
+            width: 15%;
+            margin: 10px;
+            display: flex;
         }
 
         .post img {
@@ -48,28 +54,37 @@
             height: auto;
             border-radius: 5px;
         }
-
-        .post-title {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
     </style>
 </head>
-<body>
-<header>
-    <h1>1337b04rd</h1>
-    <h1>Archive</h1>
 
-    <nav>
-        <!-- Navigation links -->
-        [<a href="catalog.html">Catalog</a>] |
-        [<a href="create-post.html">Create Post</a>]
-    </nav>
-</header>
-<main>
-    <section class="post-grid" id="postGrid">
-        <!-- Posts will be dynamically inserted here -->
-    </section>
-</main>
+<body>
+    <header>
+        <h1>1337b04rd</h1>
+        <h1>Catalog</h1>
+        <nav>
+            <!-- Navigation links -->
+            [<a href="create-post">Create Post</a>] |
+            [<a href="catalog">Catalog</a>] |
+            [<a href="archive">Archive</a>]
+        </nav>
+    </header>
+    <main>
+        <section class="posts">
+            <ul class="list">
+                {{range .}}
+                    {{if .DeletedAt}} <!-- Check if the post is deleted -->
+                        <li class="post">
+                            <a href="/post/{{.ID}}">
+                                <img src="{{.ImageURL}}" alt="no pic">
+                                <h3>{{.Title}}</h3>
+                            </a>
+                        </li>
+                    {{end}}
+                {{end}}
+            </ul>
+            <!-- Posts will be dynamically inserted here -->
+        </section>
+    </main>
 </body>
+
 </html>

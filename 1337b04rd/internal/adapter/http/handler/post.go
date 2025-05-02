@@ -9,8 +9,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
 )
 
@@ -183,6 +185,7 @@ func (h *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 		Content:    post.Content,
 		Comments:   cmVM,
 		Image:      post.ImageURL,
+		Deleted:    post.DeletedAt,
 	}
 
 	// 7) Рендерим шаблон
@@ -201,6 +204,14 @@ func (h *PostHandler) UpdatePostPostByID(w http.ResponseWriter, r *http.Request)
 func (h *PostHandler) DeletePostPostPostByID(w http.ResponseWriter, r *http.Request) {
 }
 
+func (h *PostHandler) CreatePostPage(w http.ResponseWriter, r *http.Request) {
+	err := RenderTemplate(w, "create-post.html", nil)
+	if err != nil {
+		http.Error(w, "Ошибка рендеринга шаблона: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func (h *PostHandler) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	posts, err := h.postService.ListPosts(ctx)
@@ -210,7 +221,7 @@ func (h *PostHandler) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println(posts)
-	// Отправляем данные в шаблон
+
 	w.Header().Set("Content-Type", "text/html")
 	err = RenderTemplate(w, "catalog.html", posts)
 	if err != nil {
@@ -219,10 +230,62 @@ func (h *PostHandler) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *PostHandler) CreatePostPage(w http.ResponseWriter, r *http.Request) {
-	err := RenderTemplate(w, "create-post.html", nil)
+func (h *PostHandler) GetArchivedPosts(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	if h.postService == nil {
+		http.Error(w, `{"error":"internal server error - service not initialized"}`, http.StatusInternalServerError)
+		return
+	}
+
+	if h.logger == nil {
+		fmt.Println("Логгер не инициализирован, используем стандартный вывод")
+	} else {
+		h.logger.Debug("GetArchivedPosts: начинаем выполнение")
+	}
+
+	posts, err := h.postService.ListArchivedPosts(ctx)
 	if err != nil {
-		http.Error(w, "Ошибка рендеринга шаблона: "+err.Error(), http.StatusInternalServerError)
+		if h.logger != nil {
+			h.logger.Error("Ошибка при получении постов", err)
+		} else {
+			fmt.Printf("Ошибка при получении постов: %v\n", err)
+		}
+		http.Error(w, `{"error":"error receiving posts"}`, http.StatusInternalServerError)
+		return
+	}
+
+	if posts == nil {
+		posts = []entity.PostRequest{}
+	}
+
+	if h.logger != nil {
+		h.logger.Debug("Fetched archived posts:", posts)
+	} else {
+		fmt.Printf("Получено архивных постов: %d\n", len(posts))
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+
+	tmplPath := filepath.Join("web", "archive.html")
+	if _, err := template.ParseFiles(tmplPath); err != nil {
+		if h.logger != nil {
+			h.logger.Error("Ошибка при парсинге шаблона", err)
+		} else {
+			fmt.Printf("Ошибка при парсинге шаблона: %v\n", err)
+		}
+		http.Error(w, "Error parsing template", http.StatusInternalServerError)
+		return
+	}
+
+	err = RenderTemplate(w, "archive.html", posts)
+	if err != nil {
+		if h.logger != nil {
+			h.logger.Error("Ошибка при рендеринге шаблона", err)
+		} else {
+			fmt.Printf("Ошибка при рендеринге шаблона: %v\n", err)
+		}
+		http.Error(w, "Error template rendering", http.StatusInternalServerError)
 		return
 	}
 }

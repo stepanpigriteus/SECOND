@@ -1,25 +1,31 @@
 package entity
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 // Структура для поста
 type Post struct {
-	ID            int32     `json:"id"`
-	Title         string    `json:"title"`
-	Content       string    `json:"content"`
-	ImageURL      string    `json:"image_url,omitempty"`
-	UserID        int       `json:"user_id"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	DeletedAt     time.Time `json:"deleted_at,omitempty"`
-	LastCommentAt time.Time `json:"last_comment_at"`
+	ID            int32        `json:"id"`
+	Title         string       `json:"title"`
+	Content       string       `json:"content"`
+	ImageURL      string       `json:"image_url,omitempty"`
+	UserID        int          `json:"user_id"`
+	CreatedAt     time.Time    `json:"created_at"`
+	UpdatedAt     time.Time    `json:"updated_at"`
+	DeletedAt     sql.NullTime `json:"deleted_at,omitempty"`
+	LastCommentAt time.Time    `json:"last_comment_at"`
 }
 
 type PostRequest struct {
-	ID       int32  `json:"id"`
-	Title    string `json:"title"`
-	Content  string `json:"content"`
-	ImageURL string `json:"image_url,omitempty"`
+	ID        int32        `json:"id"`
+	Title     string       `json:"title"`
+	Content   string       `json:"content"`
+	ImageURL  string       `json:"image_url,omitempty"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
 }
 
 // {

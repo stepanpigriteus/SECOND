@@ -1,5 +1,7 @@
 package handler
 
+import "database/sql"
+
 type CommentVM struct {
 	AvatarURL string
 	UserName  string
@@ -20,4 +22,5 @@ type PostVM struct {
 	Content    string
 	Comments   []CommentVM
 	Image      string
+	Deleted    sql.NullTime
 }

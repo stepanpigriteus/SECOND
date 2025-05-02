@@ -56,7 +56,7 @@ func (r *PostgresPostRepository) GetPostByID(ctx context.Context, id int32) (*en
 	}
 	post.ImageURL = strings.Replace(post.ImageURL, "minio", "localhost", 1)
 	post.ImageURL = strings.Replace(post.ImageURL, "https", "http", 1)
-	
+
 	return &post, nil
 }
 
@@ -93,6 +93,42 @@ func (r *PostgresPostRepository) ListPosts(ctx context.Context) ([]entity.PostRe
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
+	}
+
+	return posts, nil
+}
+
+func (r *PostgresPostRepository) ListArchivedPosts(ctx context.Context) ([]entity.PostRequest, error) {
+	if r.db == nil {
+		return []entity.PostRequest{}, fmt.Errorf("database connection not initialized")
+	}
+
+	rows, err := r.db.QueryContext(ctx, `
+        SELECT id, title, content, image_url, created_at, deleted_at
+        FROM posts
+        WHERE deleted_at IS NOT NULL
+    `)
+	if err != nil {
+		return []entity.PostRequest{}, err
+	}
+	defer rows.Close()
+
+	var posts []entity.PostRequest
+	for rows.Next() {
+		var post entity.PostRequest
+		if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.ImageURL, &post.CreatedAt, &post.DeletedAt); err != nil {
+			return []entity.PostRequest{}, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		return []entity.PostRequest{}, err
+	}
+
+	if len(posts) == 0 {
+		return []entity.PostRequest{}, nil
 	}
 
 	return posts, nil
