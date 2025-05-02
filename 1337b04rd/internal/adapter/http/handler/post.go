@@ -96,7 +96,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 		objectName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), handler.Filename)
 
-		url, err := h.fileStorage.UploadFile(ctx, objectName, fileReader, int64(len(fileBytes)), handler.Header.Get("Content-Type"))
+		url, err := h.fileStorage.UploadFile(ctx, "posts", objectName, fileReader, int64(len(fileBytes)), handler.Header.Get("Content-Type"))
 		if err != nil {
 			http.Error(w, `{"error":"failed to upload file"}`, http.StatusInternalServerError)
 			return

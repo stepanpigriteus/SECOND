@@ -10,11 +10,10 @@ import (
 )
 
 type MinioStorage struct {
-	client     *minio.Client
-	bucketName string
+	client *minio.Client
 }
 
-func NewMinioStorage(endpoint, accessKey, secretKey, bucketName string, useSSL bool) (*MinioStorage, error) {
+func NewMinioStorage(endpoint, accessKey, secretKey string, useSSL bool) (*MinioStorage, error) {
 	client, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
 		Secure: useSSL,
@@ -23,31 +22,30 @@ func NewMinioStorage(endpoint, accessKey, secretKey, bucketName string, useSSL b
 		return nil, err
 	}
 
-	// Ensure the bucket exists
 	ctx := context.Background()
-	exists, err := client.BucketExists(ctx, bucketName)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		err := client.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+	for _, bucket := range []string{"posts", "comments"} {
+		exists, err := client.BucketExists(ctx, bucket)
 		if err != nil {
 			return nil, err
 		}
+		if !exists {
+			if err := client.MakeBucket(ctx, bucket, minio.MakeBucketOptions{}); err != nil {
+				return nil, err
+			}
+		}
 	}
 
-	return &MinioStorage{client: client, bucketName: bucketName}, nil
+	return &MinioStorage{client: client}, nil
 }
 
-func (s *MinioStorage) UploadFile(ctx context.Context, objectName string, file io.Reader, fileSize int64, contentType string) (string, error) {
-	_, err := s.client.PutObject(ctx, s.bucketName, objectName, file, fileSize, minio.PutObjectOptions{
+func (s *MinioStorage) UploadFile(ctx context.Context, bucketName, objectName string, file io.Reader, fileSize int64, contentType string) (string, error) {
+	_, err := s.client.PutObject(ctx, bucketName, objectName, file, fileSize, minio.PutObjectOptions{
 		ContentType: contentType,
 	})
 	if err != nil {
 		return "", err
 	}
 
-	// Return the URL (you may adjust this)
-	url := fmt.Sprintf("https://%s/%s/%s", s.client.EndpointURL().Host, s.bucketName, objectName)
+	url := fmt.Sprintf("https://%s/%s/%s", s.client.EndpointURL().Host, bucketName, objectName)
 	return url, nil
 }

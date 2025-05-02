@@ -14,6 +14,6 @@ func NewFileStorageService(storage apiport.FileStorage) *FileStorageService {
 	return &FileStorageService{storage: storage}
 }
 
-func (s *FileStorageService) UploadFile(ctx context.Context, objectName string, file io.Reader, fileSize int64, contentType string) (string, error) {
-	return s.storage.UploadFile(ctx, objectName, file, fileSize, contentType)
+func (s *FileStorageService) UploadFile(ctx context.Context, bucketName string, objectName string, file io.Reader, fileSize int64, contentType string) (string, error) {
+	return s.storage.UploadFile(ctx, bucketName, objectName, file, fileSize, contentType)
 }

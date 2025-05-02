@@ -2,6 +2,7 @@ package handler
 
 import (
 	"a1337b04rd/internal/domain/entity"
+	"a1337b04rd/internal/domain/port"
 	apiport "a1337b04rd/internal/domain/port/api"
 	"a1337b04rd/internal/domain/service"
 	externalfunc "a1337b04rd/pkg/external_func"
@@ -17,6 +18,7 @@ import (
 type CommentHandler struct {
 	commentService service.CommentService
 	fileStorage    apiport.FileStorage
+	logger         port.Logger
 }
 
 func NewCommentHandler(commentService service.CommentService, fs apiport.FileStorage) *CommentHandler {
@@ -24,8 +26,7 @@ func NewCommentHandler(commentService service.CommentService, fs apiport.FileSto
 }
 
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(">>> CreateComment handler called")
-
+	h.logger.Info(">>> CreateComment handler called")
 	ctx := r.Context()
 	w.Header().Set("Content-Type", "application/json")
 
@@ -51,7 +52,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 		objectName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), handler.Filename)
 
-		urlFile, err = h.fileStorage.UploadFile(ctx, objectName, fileReader, int64(len(fileBytes)), handler.Header.Get("Content-Type"))
+		urlFile, err = h.fileStorage.UploadFile(ctx, "comments", objectName, fileReader, int64(len(fileBytes)), handler.Header.Get("Content-Type"))
 		if err != nil {
 			http.Error(w, `{"error":"failed to upload file"}`, http.StatusInternalServerError)
 			return
@@ -60,7 +61,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	}
 	postIDStr := r.FormValue("post_id")
 
-	fmt.Println(">>> post ID", postIDStr)
+	h.logger.Info(">>> post ID", postIDStr)
 	postID, err := strconv.Atoi(postIDStr)
 	if err != nil {
 		http.Error(w, "invalid post_id", http.StatusBadRequest)
@@ -103,7 +104,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(">>> GetCommentByID handler called")
+	h.logger.Info(">>> GetCommentByID handler called")
 	if h.commentService == nil {
 		http.Error(w, `{"error":"commentService is not initialized"}`, http.StatusInternalServerError)
 		return

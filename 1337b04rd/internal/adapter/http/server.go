@@ -10,9 +10,11 @@ import (
 	"a1337b04rd/pkg/errors"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	servicework "a1337b04rd/internal/domain/service/service_work"
 )
@@ -25,7 +27,7 @@ type server struct {
 }
 
 func NewServer(port string, db *sql.DB, logger port.Logger) *server {
-	minioStorage, err := api.NewMinioStorage("minio:9000", "minioadmin_new", "minioadmin_new_password", "posts", false)
+	minioStorage, err := api.NewMinioStorage("minio:9000", "minioadmin_new", "minioadmin_new_password", false)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -100,5 +102,24 @@ func (h *handleDef) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+	}
+}
+
+func ScheduleInactivePostDeletion(db *sql.DB) {
+	ticker := time.NewTicker(10 * time.Minute)
+	fmt.Println()
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			// Запускаем функцию для удаления неактивных постов
+			_, err := db.Exec("SELECT mark_inactive_posts_as_deleted()")
+			if err != nil {
+				log.Printf("Ошибка при вызове функции mark_inactive_posts_as_deleted: %v", err)
+			} else {
+				log.Println("Функция mark_inactive_posts_as_deleted выполнена успешно.")
+			}
+		}
 	}
 }

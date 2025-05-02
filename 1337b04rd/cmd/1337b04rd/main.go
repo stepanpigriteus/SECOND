@@ -35,4 +35,8 @@ func main() {
 
 	server := http.NewServer(strconv.Itoa(port), db, logger)
 	server.RunServer()
+	go http.ScheduleInactivePostDeletion(db)
+
+	// Приложение работает
+	select {}
 }
