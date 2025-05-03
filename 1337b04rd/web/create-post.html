@@ -7,19 +7,85 @@
     <title>Create Post</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #E6E9F5;
+            background-color: #F0F2F5;
+            color: #0F1419;
         }
 
         header {
             text-align: center;
+            padding: 1rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        nav {
+            margin-top: 0.5rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1DA1F2;
+            font-weight: 500;
+            margin: 0 0.5rem;
         }
 
         main {
             display: flex;
             justify-content: center;
+            margin-top: 2rem;
+        }
+
+        form {
+            background-color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="file"] {
+            font-size: 1rem;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        textarea {
+            height: 120px;
+        }
+
+        input[type="submit"] {
+            background-color: #1DA1F2;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 9999px;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0d8ddb;
         }
     </style>
 </head>
@@ -27,57 +93,48 @@
 <body>
     <header>
         <h1>Create a New Post</h1>
-
         <nav>
-            <!-- Navigation links -->
-            [<a href="catalog">Catalog</a>] |
-            [<a href="archive">Archive</a>]
+            <a href="catalog">Catalog</a>
+            <a href="archive">Archive</a>
         </nav>
-        <br>
     </header>
     <main>
         <form action="/post" method="POST" enctype="multipart/form-data">
-            <table class="postForm">
-                <tbody>
-                    <tr>
-                        <td>Name</td>
-                        <td>
-                            <input name="name" type="text" placeholder="Anonymous">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Subject</td>
-                        <td>
-                            <input name="subject" type="text">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Comment</td>
-                        <td>
-                            <textarea name="comment" cols="48" rows="4"
-                                placeholder="Write your post here..."></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>File</td>
-                        <td>
-                            <input name="file" type="file">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <input type="submit" value="Post">
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" placeholder="Anonymous">
+            </div>
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <input id="subject" name="subject" type="text">
+            </div>
+            <div class="form-group">
+                <label for="comment">Comment</label>
+                <textarea id="comment" name="comment" placeholder="What's happening?"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="file">Upload</label>
+                <input id="file" name="file" type="file">
+            </div>
+            <div class="form-group" style="text-align: right;">
+                <input type="submit" value="Post">
+            </div>
         </form>
     </main>
     <script>
         const form = document.querySelector('form');
+        const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
         form.addEventListener('submit', async function (e) {
-            e.preventDefault(); // Отключаем стандартное поведение (переход)
+            e.preventDefault();
+
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+
+            if (file && file.size > MAX_FILE_SIZE) {
+                alert('Файл слишком большой. Максимальный размер — 20MB.');
+                return;
+            }
 
             const formData = new FormData(form);
 
@@ -88,14 +145,13 @@
                 });
 
                 if (response.ok) {
-                    // Можно очистить форму, показать сообщение, обновить часть страницы и т.д.
-                    alert('Пост отправлен успешно!');
+                    alert('Post submitted!');
                     form.reset();
                 } else {
-                    alert('Ошибка при отправке поста.');
+                    alert('Submission failed.');
                 }
             } catch (error) {
-                alert('Сетевая ошибка: ' + error.message);
+                alert('Network error: ' + error.message);
             }
         });
     </script>

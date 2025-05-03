@@ -5,54 +5,80 @@
     <meta charset="UTF-8">
     <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1337b04rd</title>
+    <title>1337b04rd - Deleted Posts</title>
     <style>
-        /* Set the background color for the entire body */
         body {
-            background-color: #E6E9F5;
             margin: 0;
+            background-color: #F5F6FA;
             font-family: Arial, sans-serif;
+            color: #2E2E2E;
         }
 
-        header,
-        footer {
+        header {
             text-align: center;
-            padding: 10px 0;
+            padding: 1rem 0;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         nav a {
             margin: 0 10px;
             text-decoration: none;
-            color: blue;
+            color: #1A73E8;
+            font-weight: bold;
         }
 
         nav a:hover {
             text-decoration: underline;
         }
 
-        /* Styles for the grid layout */
-        .posts .list {
+        main {
+            padding: 2rem;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
         }
 
+        .posts .list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1000px;
+            padding: 0;
+            list-style: none;
+        }
+
         .post {
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
             text-align: center;
-            width: 15%;
-            margin: 10px;
-            display: flex;
+            transition: transform 0.2s ease;
+        }
+
+        .post:hover {
+            transform: scale(1.02);
+        }
+
+        .post a {
+            color: inherit;
+            text-decoration: none;
+            display: block;
         }
 
         .post img {
-            max-width: 100%;
+            width: 100%;
             height: auto;
-            border-radius: 5px;
+            object-fit: cover;
+            aspect-ratio: 4/3;
+        }
+
+        .post h3 {
+            padding: 0.75rem;
+            margin: 0;
+            font-size: 1rem;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -60,29 +86,28 @@
 <body>
     <header>
         <h1>1337b04rd</h1>
-        <h1>Catalog</h1>
+        <h2>Deleted Posts</h2>
         <nav>
-            <!-- Navigation links -->
             [<a href="create-post">Create Post</a>] |
             [<a href="catalog">Catalog</a>] |
-            [<a href="archive">Archive</a>]
+
         </nav>
     </header>
+
     <main>
         <section class="posts">
             <ul class="list">
                 {{range .}}
-                    {{if .DeletedAt}} <!-- Check if the post is deleted -->
-                        <li class="post">
-                            <a href="/post/{{.ID}}">
-                                <img src="{{.ImageURL}}" alt="no pic">
-                                <h3>{{.Title}}</h3>
-                            </a>
-                        </li>
-                    {{end}}
+                {{if .DeletedAt}}
+                <li class="post">
+                    <a href="/post/{{.ID}}">
+                        <img src="{{.ImageURL}}" alt="no pic">
+                        <h3>{{.Title}}</h3>
+                    </a>
+                </li>
+                {{end}}
                 {{end}}
             </ul>
-            <!-- Posts will be dynamically inserted here -->
         </section>
     </main>
 </body>

@@ -34,64 +34,70 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	// Ограничить размер тела (например, 10MB)
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		http.Error(w, `{"error":"invalid multipart form"}`, http.StatusBadRequest)
+		h.logger.Warn("invalid multipart form:", err)
+		http.Error(w, `{"error":"invalid multipart form or file too large"}`, http.StatusBadRequest)
 		return
 	}
 
 	text := r.FormValue("comment")
+	postIDStr := r.FormValue("post_id")
+	parID := r.FormValue("parent_id")
+
 	file, handler, err := r.FormFile("file")
 	var urlFile string
+	if err != nil && err != http.ErrMissingFile {
+		h.logger.Warn("error reading uploaded file:", err)
+		http.Error(w, `{"error":"invalid uploaded file"}`, http.StatusBadRequest)
+		return
+	}
+
 	if err == nil && handler != nil {
 		defer file.Close()
+
 		fileBytes, err := io.ReadAll(file)
 		if err != nil {
+			h.logger.Warn("failed to read file bytes:", err)
 			http.Error(w, `{"error":"failed to read file"}`, http.StatusInternalServerError)
 			return
 		}
-		fileReader := strings.NewReader(string(fileBytes))
 
+		fileReader := strings.NewReader(string(fileBytes))
 		objectName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), handler.Filename)
 
 		urlFile, err = h.fileStorage.UploadFile(ctx, "comments", objectName, fileReader, int64(len(fileBytes)), handler.Header.Get("Content-Type"))
 		if err != nil {
+			h.logger.Error("file upload failed:", err)
 			http.Error(w, `{"error":"failed to upload file"}`, http.StatusInternalServerError)
 			return
 		}
-
 	}
-	postIDStr := r.FormValue("post_id")
 
-	h.logger.Info(">>> post ID", postIDStr)
 	postID, err := strconv.Atoi(postIDStr)
 	if err != nil {
-		http.Error(w, "invalid post_id", http.StatusBadRequest)
+		http.Error(w, `{"error":"invalid post_id"}`, http.StatusBadRequest)
 		return
 	}
 
-	user := r.Context().Value("user")
-	parID := r.FormValue("parent_id")
 	var parentID int
 	if parID != "" {
 		parentID, err = strconv.Atoi(parID)
+		if err != nil {
+			http.Error(w, `{"error":"invalid parent_id"}`, http.StatusBadRequest)
+			return
+		}
 	}
 
-	if err != nil {
-
-		http.Error(w, "invalid parent_id", http.StatusBadRequest)
-		return
-	}
-
+	user := ctx.Value("user")
 	userID := user.(*entity.User).ID
+
 	comment := entity.Comment{
 		Content:  text,
 		PostID:   postID,
 		UserID:   userID,
 		ParentID: parentID,
 		FileURL:  urlFile,
-		// Другие поля можно добавить по необходимости
 	}
 
-	// Вызов сервиса
 	createdComment, err := h.commentService.CreateComment(ctx, comment, handler)
 	if err != nil {
 		http.Error(w, `{"error":"failed to create comment"}`, http.StatusInternalServerError)

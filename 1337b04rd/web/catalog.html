@@ -7,52 +7,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1337b04rd</title>
     <style>
-        /* Set the background color for the entire body */
         body {
-            background-color: #E6E9F5;
             margin: 0;
-            font-family: Arial, sans-serif;
+            background-color: #F0F2F5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #0F1419;
         }
 
         header,
         footer {
             text-align: center;
-            padding: 10px 0;
+            padding: 1rem 0;
+            background-color: white;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
         }
 
         nav a {
-            margin: 0 10px;
+            margin: 0 0.75rem;
             text-decoration: none;
-            color: blue;
+            color: #1DA1F2;
+            font-weight: 500;
         }
 
         nav a:hover {
             text-decoration: underline;
         }
 
-        /* Styles for the grid layout */
-        .posts .list {
+        h1 {
+            margin: 0.5rem 0;
+            font-size: 1.75rem;
+        }
+
+        main {
+            padding: 2rem;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
+        }
+
+        .posts .list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1000px;
+            padding: 0;
+            list-style: none;
         }
 
         .post {
             background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 15%;
-            margin: 10px;
-            display: flex;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .post:hover {
+            transform: translateY(-4px);
+        }
+
+        .post a {
+            color: inherit;
+            text-decoration: none;
+            display: block;
+            height: 100%;
         }
 
         .post img {
-            max-width: 100%;
+            width: 100%;
             height: auto;
-            border-radius: 5px;
+            display: block;
+            object-fit: cover;
+            aspect-ratio: 4/3;
+        }
+
+        .post h3 {
+            padding: 0.75rem 1rem;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -62,7 +95,6 @@
         <h1>1337b04rd</h1>
         <h1>Catalog</h1>
         <nav>
-            <!-- Navigation links -->
             [<a href="create-post">Create Post</a>] |
             [<a href="archive">Archive</a>]
         </nav>
@@ -71,18 +103,14 @@
         <section class="posts">
             <ul class="list">
                 {{range .}}
-
                 <li class="post">
                     <a href="/post/{{.ID}}">
                         <img src="{{.ImageURL}}" alt="no pic">
                         <h3>{{.Title}}</h3>
                     </a>
                 </li>
-
-
                 {{end}}
             </ul>
-            <!-- Posts will be dynamically inserted here -->
         </section>
     </main>
 </body>

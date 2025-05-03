@@ -14,7 +14,7 @@
             display: flex;
             justify-content: center;
         }
-    
+
         main {
             width: 600px;
             background-color: #fff;
@@ -23,26 +23,40 @@
             border-radius: 8px;
             margin-top: 20px;
         }
-        
-        .title {
-            display: flex;
-            justify-content: center;
-        }
-        
-        .post, .comment {
-            border-bottom: 1px solid #E1E8ED;
-            padding: 16px 0;
+
+        nav {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .avatar_img {
-            width: 50px;
+        nav a {
+            text-decoration: none;
+            color: #1DA1F2;
+            font-weight: bold;
+            margin: 0 10px;
+            padding: 8px 16px;
+            border: 1px solid #1DA1F2;
+            border-radius: 9999px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        nav a:hover {
+            background-color: #1DA1F2;
+            color: white;
+        }
+
+        .post,
+        .comment {
+            border-bottom: 1px solid #E1E8ED;
+            padding: 16px 0;
+            list-style: none;
         }
 
         .header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 8px;
         }
 
         .header img {
@@ -51,45 +65,57 @@
             height: 48px;
         }
 
-        .header b {
-            font-weight: bold;
+        .header-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-info b {
             color: #14171A;
         }
 
-        .header span {
+        .header-info span {
             color: #657786;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .content .text {
             font-size: 15px;
             color: #14171A;
-            text-align: left;
+            margin-bottom: 10px;
         }
 
         .content img {
             border-radius: 12px;
             max-width: 100%;
-            margin-top: 10px;
         }
 
         .comments h2 {
             font-size: 18px;
-            border-bottom: 1px solid #E1E8ED;
-            padding-bottom: 10px;
+            margin-bottom: 12px;
             color: #14171A;
-            text-align: left;
         }
 
         .comment .content {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
+            padding-left: 60px;
+        }
+
+        .answer-button {
+            background: none;
+            border: none;
+            color: #1DA1F2;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 6px;
+        }
+
+        .answer-button:hover {
+            text-decoration: underline;
         }
 
         .add-comment {
-            margin: 20px 5%;
-            text-align: left;
+            margin-top: 30px;
         }
 
         .add-comment h3 {
@@ -98,22 +124,21 @@
         }
 
         .add-comment textarea {
-            width: 80%;
+            width: 95%;
             border: 1px solid #E1E8ED;
             border-radius: 8px;
             padding: 10px;
-            margin: 0 5%;
             font-size: 14px;
             resize: vertical;
+            margin-top: 8px;
         }
 
         .add-comment input[type="file"] {
-            margin-top: 10px;
+            margin: 10px 0;
         }
 
         .add-comment input[type="submit"] {
-            margin-top: 10px;
-            padding: 8px 16px;
+            padding: 8px 20px;
             background-color: #1DA1F2;
             color: white;
             border: none;
@@ -122,65 +147,26 @@
             cursor: pointer;
         }
 
-        .answer-button {
-            background: none;
-            border: none;
-            color: #1DA1F2;
-            font-size: 14px;
-            margin-top: 5px;
-            cursor: pointer;
-            padding: 0;
-            text-align: left;
+        .add-comment input[type="submit"]:hover {
+            background-color: #1991DA;
         }
-
-        .answer-button:hover {
-            text-decoration: underline;
-        }
-
-        /* New Styles for Navigation Buttons */
-        nav {
-            padding: 20px 0;
-            text-align: center;
-        }
-
-        nav a {
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 20px;
-            color: #1DA1F2;
-            background-color: #fff;
-            font-weight: bold;
-            border: 1px solid #E1E8ED;
-            transition: all 0.3s ease;
-        }
-
-        nav a:hover {
-            background-color: #1DA1F2;
-            color: white;
-        }
-
     </style>
 </head>
 
 <body>
-    <header>
-       
-    </header>
-
     <main>
         <nav>
-            <!-- Navigation links styled as Twitter-like buttons -->
             <a href="/catalog">Catalog</a>
             <a href="/archive">Archive</a>
         </nav>
-        <!-- Main Post -->
+
         <div class="post">
             <div class="header">
-                <img class="avatar_img" src="{{.UserAvatar}}" alt="no pic">
-                <div>
-                    <b>{{.UserName}}</b> <br>
+                <img src="{{.UserAvatar}}" alt="avatar">
+                <div class="header-info">
+                    <b>{{.UserName}}</b>
                     <span>{{.CreatedAt}}</span>
+                    <span>ID: {{.PostID}}</span>
                 </div>
             </div>
             <div class="content">
@@ -189,29 +175,28 @@
                     {{.Content}}
                 </div>
                 {{if .Image}}
-                <img src="{{.Image}}" alt="no pic">
+                <img src="{{.Image}}" alt="image">
                 {{end}}
             </div>
         </div>
 
-        <!-- Comments Section -->
         <div class="comments">
             <h2>Comments</h2>
             <ul class="comment-list">
                 {{range .Comments}}
                 <li class="comment">
                     <div class="header">
-                        <img src="{{.AvatarURL}}" alt="no pic">
-                        <div>
-                            <b>{{.UserName}}</b> <br>
+                        <img src="{{.AvatarURL}}" alt="avatar">
+                        <div class="header-info">
+                            <b>{{.UserName}}</b>
                             <span>{{.CreatedAt}} · ParentID: {{.ParentID}}</span>
                         </div>
                     </div>
                     <div class="content">
                         <div class="text">{{.Content}}</div>
-                
-                        <img src="{{.Image}}" alt="no pic">
-                     
+                        {{if .Image}}
+                        <img src="{{.Image}}" alt="comment image">
+                        {{end}}
                         <button type="button" class="answer-button" data-parent-id="{{.CommentID}}">Reply</button>
                     </div>
                 </li>
@@ -219,33 +204,73 @@
             </ul>
         </div>
 
-        <!-- Add a Comment Section -->
         <div class="add-comment">
             <h3>Add a Comment</h3>
             <iframe id="hiddenFrame" name="hiddenFrame" style="display:none;"></iframe>
-            <form  class="form" id="commentForm" action="/post/comment" method="POST" enctype="multipart/form-data" target="hiddenFrame">
-                <textarea name="comment" placeholder="Write your comment here..."></textarea>
-                <br>
-                <label for="file">File:</label>
+            <form class="form" id="commentForm" action="/post/comment" method="POST" enctype="multipart/form-data"
+                target="hiddenFrame">
+                <textarea name="comment" placeholder="What's happening?"></textarea>
                 <input type="hidden" name="post_id" value="{{.PostID}}">
                 <input type="hidden" name="parent_id" id="parentId">
                 <input type="file" name="file" id="file">
                 <br>
-                <input type="submit" value="Submit">
+                <input type="submit" value="Tweet">
             </form>
         </div>
     </main>
-
     <script>
-        // JavaScript for handling the "Reply" button
-        document.querySelectorAll('.answer-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const parentId = this.getAttribute('data-parent-id');
-                document.getElementById('parentId').value = parentId; // Set the value of the hidden field
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("commentForm");
+            const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
+            form.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                const fileInput = document.querySelector('input[type="file"]');
+                const file = fileInput ? fileInput.files[0] : null;
+
+
+                if (file && file.size > MAX_FILE_SIZE) {
+                    alert('Размер файла превышает максимальный допустимый размер (10MB)');
+                    return;
+                }
+
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text();
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+
+                        if (typeof data === 'string') {
+                            alert(data);
+                        } else {
+
+                            alert('Комментарий успешно добавлен!');
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        alert('Ошибка при отправке комментария');
+                    });
             });
-        });
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('parentId').value = '';
+
+
+            document.getElementById("parentId").value = "";
+
+            document.querySelectorAll('.answer-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const parentId = this.getAttribute('data-parent-id');
+                    document.getElementById('parentId').value = parentId;
+                });
+            });
         });
     </script>
 </body>
