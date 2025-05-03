@@ -15,15 +15,6 @@ a1337b04rd/internal/adapter/http/server.go:87.71,91.27 3 0
 a1337b04rd/internal/adapter/http/server.go:91.27,93.3 1 0
 a1337b04rd/internal/adapter/http/server.go:95.2,102.16 4 0
 a1337b04rd/internal/adapter/http/server.go:102.16,104.3 1 0
-a1337b04rd/internal/adapter/http/router/router.go:18.144,48.31 3 0
-a1337b04rd/internal/adapter/http/router/router.go:48.31,51.3 2 0
-a1337b04rd/internal/adapter/http/router/router.go:55.70,56.71 1 0
-a1337b04rd/internal/adapter/http/router/router.go:56.71,58.25 2 0
-a1337b04rd/internal/adapter/http/router/router.go:58.25,61.4 2 0
-a1337b04rd/internal/adapter/http/router/router.go:62.3,62.26 1 0
-a1337b04rd/internal/adapter/http/router/router.go:66.98,67.32 1 0
-a1337b04rd/internal/adapter/http/router/router.go:67.32,69.3 1 0
-a1337b04rd/internal/adapter/http/router/router.go:70.2,70.10 1 0
 a1337b04rd/internal/adapter/http/handler/comments.go:26.156,28.2 1 0
 a1337b04rd/internal/adapter/http/handler/comments.go:30.80,36.55 4 0
 a1337b04rd/internal/adapter/http/handler/comments.go:36.55,40.3 3 0
@@ -158,86 +149,15 @@ a1337b04rd/internal/adapter/http/handler/user.go:96.16,99.3 2 0
 a1337b04rd/internal/adapter/http/handler/user.go:100.2,100.58 1 0
 a1337b04rd/internal/adapter/http/handler/user.go:100.58,103.3 2 0
 a1337b04rd/internal/adapter/http/handler/user.go:105.2,105.37 1 0
-a1337b04rd/internal/config/config.go:27.27,45.2 14 1
-a1337b04rd/pkg/flags/flags.go:9.18,14.26 4 0
-a1337b04rd/pkg/flags/flags.go:14.26,16.3 1 0
-a1337b04rd/pkg/flags/flags.go:17.2,17.11 1 0
-a1337b04rd/pkg/flags/flags.go:17.11,20.3 2 0
-a1337b04rd/pkg/flags/flags.go:21.2,21.14 1 0
-a1337b04rd/pkg/flags/flags.go:24.17,36.2 2 0
-a1337b04rd/pkg/flags/flags.go:38.34,39.64 1 0
-a1337b04rd/pkg/flags/flags.go:39.64,41.3 1 0
-a1337b04rd/pkg/flags/flags.go:42.2,42.13 1 0
-a1337b04rd/pkg/logger/logger.go:13.35,17.2 3 0
-a1337b04rd/pkg/logger/logger.go:19.61,21.2 1 0
-a1337b04rd/pkg/logger/logger.go:23.62,25.2 1 0
-a1337b04rd/pkg/logger/logger.go:27.61,29.2 1 0
-a1337b04rd/pkg/logger/logger.go:31.62,33.2 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:19.118,24.2 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:26.143,32.16 4 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:32.16,34.3 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:36.2,37.23 2 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:37.23,39.3 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:40.2,41.16 2 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:41.16,43.3 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:45.2,45.29 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:48.96,51.16 3 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:51.16,53.3 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:55.2,55.24 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:55.24,57.3 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:59.2,60.29 2 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:60.29,62.3 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:64.2,64.20 1 0
-a1337b04rd/internal/domain/service/service_work/comment-service.go:67.75,70.2 2 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:17.73,19.2 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:21.94,27.16 5 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:27.16,29.3 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:31.2,31.26 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:34.87,37.16 3 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:37.16,39.3 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:40.2,40.19 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:43.104,47.2 3 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:49.71,52.2 2 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:54.84,56.2 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:58.92,59.23 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:59.23,61.3 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:63.2,64.16 2 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:64.16,66.3 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:68.2,68.18 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:68.18,70.3 1 0
-a1337b04rd/internal/domain/service/service_work/post_service.go:72.2,72.19 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:16.82,20.2 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:22.109,26.22 2 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:26.22,28.3 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:31.2,31.32 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:31.32,33.3 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:35.2,35.32 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:35.32,37.3 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:39.2,43.16 3 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:43.16,46.3 2 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:48.2,49.29 2 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:52.97,56.16 3 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:56.16,59.3 2 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:61.2,62.22 2 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:65.78,67.16 2 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:67.16,69.3 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:70.2,70.12 1 0
-a1337b04rd/internal/domain/service/service_work/session_service .go:73.33,75.2 1 0
-a1337b04rd/internal/domain/service/service_work/storage.go:13.77,15.2 1 0
-a1337b04rd/internal/domain/service/service_work/storage.go:17.168,19.2 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:15.70,19.2 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:21.94,22.30 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:22.30,24.3 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:25.2,29.16 4 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:29.16,31.3 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:32.2,32.26 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:35.85,39.16 3 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:39.16,41.3 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:43.2,43.19 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:46.94,49.16 3 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:49.16,51.3 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:52.2,52.26 1 0
-a1337b04rd/internal/domain/service/service_work/user_service.go:55.69,58.2 2 0
+a1337b04rd/internal/adapter/http/router/router.go:18.144,48.31 3 0
+a1337b04rd/internal/adapter/http/router/router.go:48.31,51.3 2 0
+a1337b04rd/internal/adapter/http/router/router.go:55.70,56.71 1 0
+a1337b04rd/internal/adapter/http/router/router.go:56.71,58.25 2 0
+a1337b04rd/internal/adapter/http/router/router.go:58.25,61.4 2 0
+a1337b04rd/internal/adapter/http/router/router.go:62.3,62.26 1 0
+a1337b04rd/internal/adapter/http/router/router.go:66.98,67.32 1 0
+a1337b04rd/internal/adapter/http/router/router.go:67.32,69.3 1 0
+a1337b04rd/internal/adapter/http/router/router.go:70.2,70.10 1 0
 a1337b04rd/internal/adapter/repository/postgress/comment.go:16.74,18.2 1 0
 a1337b04rd/internal/adapter/repository/postgress/comment.go:20.122,29.27 3 0
 a1337b04rd/internal/adapter/repository/postgress/comment.go:29.27,31.3 1 0
@@ -336,6 +256,86 @@ a1337b04rd/internal/adapter/repository/postgress/user.go:90.16,92.3 1 0
 a1337b04rd/internal/adapter/repository/postgress/user.go:94.2,95.16 2 0
 a1337b04rd/internal/adapter/repository/postgress/user.go:95.16,98.3 2 0
 a1337b04rd/internal/adapter/repository/postgress/user.go:100.2,102.16 2 0
+a1337b04rd/internal/config/config.go:27.27,45.2 14 1
+a1337b04rd/pkg/flags/flags.go:9.18,14.26 4 0
+a1337b04rd/pkg/flags/flags.go:14.26,16.3 1 0
+a1337b04rd/pkg/flags/flags.go:17.2,17.11 1 0
+a1337b04rd/pkg/flags/flags.go:17.11,20.3 2 0
+a1337b04rd/pkg/flags/flags.go:21.2,21.14 1 0
+a1337b04rd/pkg/flags/flags.go:24.17,36.2 2 0
+a1337b04rd/pkg/flags/flags.go:38.34,39.64 1 0
+a1337b04rd/pkg/flags/flags.go:39.64,41.3 1 0
+a1337b04rd/pkg/flags/flags.go:42.2,42.13 1 0
+a1337b04rd/pkg/logger/logger.go:13.35,17.2 3 0
+a1337b04rd/pkg/logger/logger.go:19.61,21.2 1 0
+a1337b04rd/pkg/logger/logger.go:23.62,25.2 1 0
+a1337b04rd/pkg/logger/logger.go:27.61,29.2 1 0
+a1337b04rd/pkg/logger/logger.go:31.62,33.2 1 0
+a1337b04rd/internal/domain/service/service_work/comment-service.go:19.118,24.2 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:26.143,32.16 4 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:32.16,34.3 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:36.2,37.23 2 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:37.23,39.3 1 0
+a1337b04rd/internal/domain/service/service_work/comment-service.go:40.2,41.16 2 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:41.16,43.3 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:45.2,45.29 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:48.96,51.16 3 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:51.16,53.3 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:55.2,55.24 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:55.24,57.3 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:59.2,60.29 2 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:60.29,62.3 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:64.2,64.20 1 1
+a1337b04rd/internal/domain/service/service_work/comment-service.go:67.75,70.2 2 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:17.73,19.2 1 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:21.94,27.16 5 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:27.16,29.3 1 0
+a1337b04rd/internal/domain/service/service_work/post_service.go:31.2,31.26 1 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:34.87,37.16 3 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:37.16,39.3 1 0
+a1337b04rd/internal/domain/service/service_work/post_service.go:40.2,40.19 1 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:43.104,47.2 3 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:49.71,52.2 2 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:54.84,56.2 1 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:58.92,59.23 1 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:59.23,61.3 1 0
+a1337b04rd/internal/domain/service/service_work/post_service.go:63.2,64.16 2 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:64.16,66.3 1 0
+a1337b04rd/internal/domain/service/service_work/post_service.go:68.2,68.18 1 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:68.18,70.3 1 1
+a1337b04rd/internal/domain/service/service_work/post_service.go:72.2,72.19 1 0
+a1337b04rd/internal/domain/service/service_work/session_service .go:16.82,20.2 1 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:22.109,26.22 2 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:26.22,28.3 1 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:31.2,31.32 1 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:31.32,33.3 1 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:35.2,35.32 1 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:35.32,37.3 1 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:39.2,43.16 3 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:43.16,46.3 2 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:48.2,49.29 2 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:52.97,56.16 3 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:56.16,59.3 2 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:61.2,62.22 2 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:65.78,67.16 2 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:67.16,69.3 1 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:70.2,70.12 1 1
+a1337b04rd/internal/domain/service/service_work/session_service .go:73.33,75.2 1 1
+a1337b04rd/internal/domain/service/service_work/storage.go:13.77,15.2 1 0
+a1337b04rd/internal/domain/service/service_work/storage.go:17.168,19.2 1 0
+a1337b04rd/internal/domain/service/service_work/user_service.go:15.70,19.2 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:21.94,22.30 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:22.30,24.3 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:25.2,29.16 4 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:29.16,31.3 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:32.2,32.26 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:35.85,39.16 3 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:39.16,41.3 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:43.2,43.19 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:46.94,49.16 3 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:49.16,51.3 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:52.2,52.26 1 1
+a1337b04rd/internal/domain/service/service_work/user_service.go:55.69,58.2 2 1
 a1337b04rd/internal/adapter/http/middleware/logger.go:10.55,11.71 1 1
 a1337b04rd/internal/adapter/http/middleware/logger.go:11.71,22.3 5 1
 a1337b04rd/internal/adapter/http/middleware/session_middleware.go:14.128,15.46 1 1
