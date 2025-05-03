@@ -36,7 +36,7 @@ func (s *sessionService) CreateSession(ctx context.Context, session entity.Sessi
 		session.ExpiresAt = time.Now().Add(7 * 24 * time.Hour)
 	}
 
-	fmt.Printf(">>> Сохраняем сессию в БД: ID=%s, UserID=%s\n", session.ID, session.UserID)
+	fmt.Printf(">>> Сохраняем сессию в БД: ID=%s, UserID=%d\n", session.ID, session.UserID)
 
 	// Сохраняем в репозитории
 	createdSession, err := s.sessionRepo.CreateSession(ctx, &session)
@@ -58,7 +58,7 @@ func (s *sessionService) GetSessionByID(ctx context.Context, id string) (entity.
 		return entity.Session{}, fmt.Errorf("failed to get session with ID %s: %v", id, err)
 	}
 
-	fmt.Printf(">>> Сессия найдена: UserID=%s, ExpiresAt=%v\n", session.UserID, session.ExpiresAt)
+	fmt.Printf(">>> Сессия найдена: UserID=%d, ExpiresAt=%v\n", session.UserID, session.ExpiresAt)
 	return *session, nil
 }
 

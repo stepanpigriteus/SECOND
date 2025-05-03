@@ -34,7 +34,7 @@ func SessionMiddleware(sessionService service.SessionService, userService servic
 				session, err := sessionService.GetSessionByID(r.Context(), cookie.Value)
 
 				if err == nil && session.ID != "" {
-					fmt.Printf(">>> [DEBUG] SessionMiddleware: Сессия найдена, UserID=%s\n", session.UserID)
+					fmt.Printf(">>> [DEBUG] SessionMiddleware: Сессия найдена, UserID=%d\n", session.UserID)
 
 					// Сессия найдена и действительна
 					if session.ExpiresAt.After(time.Now()) {
@@ -42,7 +42,7 @@ func SessionMiddleware(sessionService service.SessionService, userService servic
 						user, err := userService.GetUserByID(r.Context(), session.UserID)
 
 						if err == nil {
-							fmt.Printf(">>> [DEBUG] SessionMiddleware: Пользователь найден, ID=%s\n", user.ID)
+							fmt.Printf(">>> [DEBUG] SessionMiddleware: Пользователь найден, ID=%d\n", user.ID)
 
 							// Помечаем, что аутентификация успешна
 							authenticated = true
@@ -113,7 +113,7 @@ func SessionMiddleware(sessionService service.SessionService, userService servic
 					http.Error(w, "Ошибка при создании пользователя", http.StatusInternalServerError)
 					return
 				}
-				fmt.Printf(">>> [DEBUG] SessionMiddleware: Создан пользователь, ID=%s\n", createdUser.ID)
+				fmt.Printf(">>> [DEBUG] SessionMiddleware: Создан пользователь, ID=%d\n", createdUser.ID)
 
 				// 4. Создаем объект сессии
 				newSession := entity.Session{

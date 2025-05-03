@@ -17,7 +17,7 @@ func NewPostgresSessionRepository(db *sql.DB) *PostgresSessionRepository {
 }
 
 func (r *PostgresSessionRepository) CreateSession(ctx context.Context, session *entity.Session) (*entity.Session, error) {
-	fmt.Printf(">>> Repository: Creating session with ID=%s, UserID=%s\n", session.ID, session.UserID)
+	fmt.Printf(">>> Repository: Creating session with ID=%s, UserID=%d\n", session.ID, session.UserID)
 
 	query := `INSERT INTO sessions (id, user_id, created_at, expires_at) VALUES ($1, $2, $3, $4) RETURNING id`
 	err := r.db.QueryRowContext(ctx, query, session.ID, session.UserID, session.CreatedAt, session.ExpiresAt).Scan(&session.ID)
@@ -51,7 +51,8 @@ func (r *PostgresSessionRepository) GetSessionByID(ctx context.Context, id strin
 		return nil, fmt.Errorf("не удалось получить сессию: %v", err)
 	}
 
-	fmt.Printf(">>> Repository: Session found: ID=%s, UserID=%s\n", session.ID, session.UserID)
+	fmt.Printf(">>> Repository: Session found: ID=%s, UserID=%d\n", session.ID, session.UserID)
+
 	return session, nil
 }
 

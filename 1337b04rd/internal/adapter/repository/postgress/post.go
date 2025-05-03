@@ -23,6 +23,10 @@ func NewPostgresPostRepository(db *sql.DB) *PostgresPostRepository {
 }
 
 func (r *PostgresPostRepository) CreatePost(ctx context.Context, post *entity.Post) (*entity.Post, error) {
+
+	if r.db == nil {
+		return nil, errors.New("database connection is nil")
+	}
 	query := `
         INSERT INTO posts (title, content, image_url, user_id)
         VALUES ($1, $2, $3, $4)
